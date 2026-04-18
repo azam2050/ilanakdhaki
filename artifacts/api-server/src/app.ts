@@ -1,5 +1,6 @@
 import express, { type Express } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -26,7 +27,11 @@ app.use(
   }),
 );
 app.use(cors());
-app.use(express.json());
+app.use(cookieParser());
+app.use("/api", (req, res, next) => {
+  if (req.path === "/webhooks/salla") return next();
+  return express.json({ limit: "1mb" })(req, res, next);
+});
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
