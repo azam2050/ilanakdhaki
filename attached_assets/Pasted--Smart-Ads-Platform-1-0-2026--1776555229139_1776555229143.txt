@@ -1,0 +1,713 @@
+
+Smart Ads Platform — الإصدار 1.0 | أبريل 2026
+١. نظرة عامة على المشروع
+منصة إعلانية ذكية مدمجة مع سلة وزد. يثبّت التاجر التطبيق مرة واحدة ويربط حسابه الإعلاني، ثم يشحن رصيده ويضغط زراً واحداً. الذكاء الاصطناعي يتولى كل شيء: تحليل المتجر، صناعة الإعلان، بناء الجمهور، توزيع الميزانية، والتحسين اليومي — بينما تتراكم بيانات شبكة المتاجر لتجعل كل تاجر جديد يبدأ بجمهور جاهز من اليوم الأول.
+١.١ الميزة التنافسية
+العنصر
+سلة Ads (المنافس)
+منصتنا
+إدارة الحملة
+التاجر يدير بنفسه
+AI يدير بالكامل ✅
+البيكسل والبيانات
+كل تاجر معزول
+شبكة مشتركة مجمعة ✅
+الجمهور الجاهز
+يبدأ من صفر
+١٠٠,٠٠٠+ مشتري من اليوم الأول ✅
+صناعة الإعلان
+يدوي من التاجر
+AI تلقائي بالكامل ✅
+المنصات المدعومة
+سلة فقط
+سلة + زد معاً ✅
+تذكير المواسم
+لا يوجد
+تلقائي ذكي ✅
+٢. رحلة التاجر الكاملة
+٢.١ التثبيت والموافقة
+التاجر يدخل متجر تطبيقات سلة أو زد ويضغط تثبيت. تظهر له شاشة OAuth موحدة تطلب موافقة صريحة على أربعة بنود:
+قراءة بيانات المتجر والمنتجات والمبيعات عبر Salla/Zid API
+استقبال أحداث الطلبات والسلل المتروكة عبر Webhooks لحظة بلحظة
+مشاركة بيانات المبيعات مشفرة SHA-256 مع شبكة المتاجر لتقوية الاستهداف
+إدارة حملاته الإعلانية عبر حسابه الإعلاني الشخصي (Agency API Access)
+⚠️ ملاحظة قانونية: هذه الموافقة مرة واحدة للأبد وهي محمية بنظام حماية البيانات الشخصية السعودي PDPL. لا تُستخدم البيانات لأي غرض غير الإعلان الخاص بالتاجر نفسه.
+٢.٢ ربط الحسابات الإعلانية
+بعد التثبيت يربط التاجر حسابه الإعلاني الشخصي عبر OAuth الرسمي لكل منصة:
+المنصة
+OAuth Endpoint
+الصلاحيات
+ما نحصل عليه
+سناب شات
+accounts.snapchat.com/oauth2
+snapchat-marketing-api
+Ad Account ID + Access Token
+ميتا / انستقرام
+facebook.com/dialog/oauth
+ads_management, ads_read
+Ad Account ID + Access Token
+تيك توك
+business-api.tiktok.com/portal
+ad.create, ad.read
+Advertiser ID + Access Token
+جوجل
+accounts.google.com/oauth2
+adwords, analytics.read
+Customer ID + Refresh Token
+٢.٣ سحب البيانات الأولي (عند التثبيت — تلقائي في الخلفية)
+سحب آخر ١٢ شهر من الطلبات: القيم، المنتجات، مدن التوصيل
+سحب قائمة المنتجات كاملة مع الصور والأسعار وأعلاها مبيعاً
+تشفير بيانات العملاء SHA-256 ورفعها كـ Custom Audience على كل منصة
+تصنيف المتجر تلقائياً بالـ AI: فئة، جمهور، نطاق جغرافي
+💡 ملاحظة: بيانات المبيعات الحقيقية أقوى من البيكسل لأنها مشترون فعليون دفعوا وليس مجرد زوار. ترفع فوراً لحساب التاجر لتجاوز Learning Phase في ساعات بدل أسبوع.
+٣. الداشبورد — واجهة التاجر
+الداشبورد يعمل على ريبلت (Next.js 14) وينشر على دومين خاص بالكامل دون أي إشارة لريبلت. يتضمن ٦ أقسام رئيسية:
+القسم ١ — لوحة الأداء الرئيسية
+إجمالي الإنفاق اليوم والشهر لكل منصة منفصلة
+عدد الطلبات وتكلفة الطلب الواحد (CPO) مقارنةً بمتوسط الشبكة
+رسم بياني لأداء آخر ٣٠ يوماً
+مؤشر صحة الحملة: ممتاز / جيد / يحتاج تحسين
+القسم ٢ — إدارة الحملات
+عرض الحملات النشطة على كل منصة مع حالتها الآنية
+إيقاف وتشغيل أي حملة بزر واحد
+عرض قرارات الـ AI: ماذا غيّر ولماذا (بالعربي البسيط)
+سجل كل التحسينات التي نفذها النظام تلقائياً
+القسم ٣ — نصائح الإعلان اليومية ⭐
+ميزة حصرية: يولد الـ AI كل يوم ١٠ جمل إعلانية قوية باللهجة السعودية العامية مخصصة لمنتجات هذا المتجر تحديداً. مبنية على:
+أعلى المنتجات مبيعاً في المتجر هذا الأسبوع
+أكثر الجمل نجاحاً في شبكة المتاجر المشابهة اليوم
+الموسم الحالي والمناسبات القادمة خلال ٢١ يوماً
+نبرة الجمهور المستهدف: شباب، ربات بيوت، رجال أعمال
+مثال — متجر عبايات في رمضان:
+١. عبايتك الرمضانية وصلت قبل ما تطلبينها | شحن مجاني لكل الرياض
+٢. اطلبي الحين وخذيها قبل العيد بيومين
+٣. موديلات ٢٠٢٦ وصلت — كوني أول وحدة تلبسها
+٤. عباية تليق بك في ليالي رمضان الفاخرة
+٥. الكمية محدودة والطلبات كثيرة — لا تفوتينها
+تتجدد هذه الجمل كل يوم تلقائياً بدون أي تدخل.
+القسم ٤ — رفع الإعلان (يدوي أو ذكي)
+خيار أول — التاجر يرفع مواده بنفسه:
+رفع فيديو أو صورة من الجهاز مباشرة
+AI يحلل المحتوى: يقيّم الجودة والجاذبية ويعطي نقاط قوة وضعف
+AI يكتب نصاً إعلانياً مناسباً ويقترح أفضل جمهور وتوقيت
+AI يقدّر تكلفة الطلب المتوقعة بناءً على بيانات الشبكة
+التاجر يراجع ويوافق ثم تنطلق الحملة فوراً
+خيار ثاني — نحن نصنع الإعلان:
+التاجر يضغط "اصنع لي الإعلان" ويختار المنتج والميزانية
+يصله إشعار فوري: "استلمنا طلبك — الحملة ستكون جاهزة خلال ١٥ دقيقة"
+Claude يكتب النص واللهجة والـ CTA باللهجة السعودية
+Fal AI يولد صورة احترافية من صورة المنتج الأصلية
+يصله إشعار: "إعلانك جاهز — راجع وابدأ" مع معاينة كاملة
+بضغطة موافقة واحدة تنطلق الحملة على كل المنصات المربوطة
+القسم ٥ — تذكير المواسم والمناسبات
+المناسبة
+قبل المناسبة بـ
+الفئات المستهدفة
+نوع التنبيه
+رمضان الكريم
+٢١ يوم
+الأزياء، المطبخ، التمور، العطور
+حملة موسمية كاملة
+عيد الفطر
+١٤ يوم
+الأزياء، الهدايا، العطور
+عروض العيد
+عيد الأضحى
+١٤ يوم
+الأزياء، الهدايا
+عروض الأضحى
+اليوم الوطني ٩٢
+١٠ أيام
+الجميع
+إعلان وطني
+يوم التأسيس
+٧ أيام
+التراث، الأزياء التقليدية
+محتوى تراثي
+موسم الصيف
+٣٠ يوم
+الإلكترونيات، الملابس، السفر
+حملة صيفية
+موسم الشتاء
+٣٠ يوم
+الملابس، المدافئ، الأحذية
+حملة شتوية
+باك تو سكول
+٢١ يوم
+القرطاسية، الحقائب، الأدوات
+حملة دراسية
+بلاك فرايدي
+١٤ يوم
+الجميع
+حملة خصومات ضخمة
+الجمعة البيضاء
+٧ أيام
+الإلكترونيات، الأثاث
+عروض حصرية
+القسم ٦ — الباقة والرصيد
+عرض الباقة الحالية والأيام المتبقية
+ترقية الباقة بضغطة واحدة مع دفع فوري عبر Moyasar
+فواتير شهرية PDF تلقائية
+سجل كامل لكل الإنفاق الإعلاني
+٤. العقل الذكي — AI Engine
+٤.١ دور Claude API
+Claude هو المحرك المركزي لكل قرارات المنصة. يُستدعى في ٥ حالات محددة فقط لخفض التكلفة:
+الحالة
+التكرار
+Input Tokens
+Output Tokens
+تحليل المتجر عند التثبيت
+مرة واحدة
+~2,000
+~500
+كتابة نصوص الإعلان
+كل ٣ أيام
+~1,000
+~400
+نصائح الإعلان اليومية (١٠ جمل)
+يومياً
+~800
+~600
+التحسين (عند انحراف فقط)
+عند الحاجة
+~1,500
+~300
+تحليل فيديو/صورة التاجر
+عند الطلب
+~2,000
+~800
+💡 مبدأ التوفير: الرياضيات أولاً (مجانية) — Claude فقط عند انحراف يتجاوز ٥٠٪ عن المتوسط. يخفض الاستدعاءات ٩٠٪ ويخفض تكلفة Claude من ~$12 للتاجر شهرياً إلى ~$1.5 فقط.
+٤.٢ نظام التحسين الذكي — ثلاثي المراحل
+المرحلة الأولى — فحص رياضي كل ١٥ دقيقة (بدون AI):
+هل تكلفة الطلب تجاوزت 1.5× متوسط الشبكة؟
+هل CTR انخفض أكثر من 50%؟
+هل الميزانية اليومية أوشكت على النفاد؟
+→ لا: استمر بدون تدخل
+→ نعم: انتقل للمرحلة الثانية
+المرحلة الثانية — Claude يشخص ويقرر:
+const decision = await claude.decide(`
+  الحملة: ${campaign.name}
+  الإنفاق: ${spend} ريال
+  الطلبات: ${orders}
+  تكلفة الطلب: ${cpo} ريال
+  متوسط الشبكة: ${networkAvg} ريال
+  
+  قرر واحداً من:
+  1. SCALE_UP — زد الميزانية 20%
+  2. SCALE_DOWN — قلل الميزانية 20%
+  3. CHANGE_AUDIENCE — غيّر الجمهور
+  4. REFRESH_CREATIVE — جدد الإعلان
+  5. PAUSE_PLATFORM — أوقف منصة معينة
+  6. KEEP — استمر
+  
+  أجب بـ JSON فقط: {action, reason, params}
+`)
+المرحلة الثالثة — تنفيذ فوري + إشعار للتاجر بالعربي:
+"قمنا بتحويل 30% من ميزانية ميتا لسناب شات
+لأن سناب أرخص اليوم بـ 40%
+تكلفة طلبك الآن: 18 ريال بدل 26 ريال"
+٤.٣ Network Audience Engine — قوة الشبكة
+يعمل على ٤ طبقات متراكمة:
+الطبقة الأولى — عملاء المتجر السابقون
+مشفرون SHA-256 → Custom Audience فوري على كل منصة
+
+الطبقة الثانية — شبكة المتاجر
+بيانات كل المتاجر في نفس الفئة → Lookalike Audience
+من مشترين حقيقيين في الخليج
+
+الطبقة الثالثة — Retargeting الذكي
+زوار لم يكملوا الشراء خلال 30 يوماً
+
+الطبقة الرابعة — Seasonal Intelligence
+تعزيز تلقائي للجمهور عند اقتراب المواسم
+بناءً على بيانات الشبكة التاريخية
+النتيجة العملية:
+تاجر بدون شبكتنا:
+بيكسله فارغ → Learning Phase أسبوع → تكلفة طلب: 60-80 ريال
+
+تاجر معنا:
+100,000 مشتري جاهز → Learning Phase ساعات → تكلفة طلب: 15-25 ريال
+٥. قاعدة البيانات والتخزين والأمان
+⚠️ تحذير: الأمان والتخزين القوي ليسا ميزة إضافية — هما أساس المشروع. أي اختراق أو ضياع بيانات يعني نهاية المشروع.
+٥.١ معمارية قاعدة البيانات
+PostgreSQL — قاعدة البيانات الرئيسية
+-- جدول التجار
+merchants (
+  id UUID PRIMARY KEY,
+  salla_merchant_id VARCHAR UNIQUE,
+  zid_merchant_id VARCHAR UNIQUE,
+  store_name VARCHAR NOT NULL,
+  category VARCHAR,           -- عبايات، إلكترونيات، إلخ
+  access_token_encrypted TEXT, -- مشفر AES-256
+  plan VARCHAR DEFAULT 'trial',
+  plan_expires_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW()
+)
+
+-- جدول الحملات
+campaigns (
+  id UUID PRIMARY KEY,
+  merchant_id UUID REFERENCES merchants(id),
+  platform VARCHAR,           -- meta, snap, tiktok, google
+  ad_account_id VARCHAR,
+  campaign_id_external VARCHAR,
+  status VARCHAR,
+  daily_budget DECIMAL,
+  spent_today DECIMAL,
+  orders_today INTEGER,
+  cpo DECIMAL,                -- تكلفة الطلب الواحد
+  created_at TIMESTAMP
+)
+
+-- جدول الأحداث (الأضخم — مُقسَّم بالتاريخ)
+events (
+  id UUID,
+  merchant_id UUID,
+  event_type VARCHAR,         -- purchase, add_to_cart, view
+  customer_email_hash VARCHAR, -- SHA-256
+  customer_phone_hash VARCHAR, -- SHA-256
+  city VARCHAR,
+  order_value DECIMAL,
+  product_category VARCHAR,
+  occurred_at TIMESTAMP
+) PARTITION BY RANGE (occurred_at)
+
+-- جدول الجماهير
+audiences (
+  id UUID PRIMARY KEY,
+  merchant_id UUID,
+  platform VARCHAR,
+  audience_id_external VARCHAR,
+  audience_type VARCHAR,      -- custom, lookalike, retarget
+  size INTEGER,
+  last_updated TIMESTAMP
+)
+
+-- جدول الإعلانات
+ad_creatives (
+  id UUID PRIMARY KEY,
+  merchant_id UUID,
+  headline TEXT,
+  body TEXT,
+  cta VARCHAR,
+  image_url TEXT,
+  ai_generated BOOLEAN DEFAULT TRUE,
+  performance_score DECIMAL,
+  created_at TIMESTAMP
+)
+
+-- جدول المواسم والتنبيهات
+seasonal_notifications (
+  id UUID PRIMARY KEY,
+  merchant_id UUID,
+  season_name VARCHAR,
+  sent_at TIMESTAMP,
+  campaign_created BOOLEAN DEFAULT FALSE
+)
+
+-- سجل التدقيق — للامتثال القانوني
+audit_log (
+  id UUID PRIMARY KEY,
+  merchant_id UUID,
+  action VARCHAR,
+  details JSONB,
+  ip_address VARCHAR,
+  occurred_at TIMESTAMP
+)
+Redis — السرعة والأداء العالي
+sessions:{token}           → بيانات الجلسة (TTL: 1 ساعة)
+oauth:{merchant_id}        → توكنات OAuth مؤقتة (TTL: 10 دقائق)
+ai_cache:{hash}            → نتائج Claude المؤقتة (TTL: 3 ساعات)
+rate_limit:{merchant_id}   → عداد الطلبات (TTL: 1 دقيقة)
+webhook_queue              → BullMQ لمعالجة Webhooks
+ClickHouse — قاعدة التحليلات الضخمة
+-- جدول الأحداث للتحليل السريع
+CREATE TABLE network_events (
+  merchant_id UUID,
+  category String,
+  city String,
+  order_value Float64,
+  event_type String,
+  occurred_at DateTime
+) ENGINE = MergeTree()
+PARTITION BY toYYYYMM(occurred_at)
+ORDER BY (category, occurred_at)
+
+-- استعلام مثال: متوسط تكلفة الطلب للشبكة
+SELECT
+  category,
+  avg(cpo) as network_avg_cpo,
+  count() as total_orders
+FROM campaign_stats
+WHERE occurred_at >= now() - INTERVAL 7 DAY
+GROUP BY category
+٥.٢ استراتيجية التوسع
+المرحلة
+عدد التجار
+البنية التحتية
+تكلفة الاستضافة/شهر
+البداية
+حتى ٥٠٠
+Replit + Neon PostgreSQL
+~$200
+النمو
+٥٠٠ - ٥,٠٠٠
+Railway + RDS PostgreSQL
+~$800
+التوسع
+٥,٠٠٠ - ٥٠,٠٠٠
+AWS ECS + Aurora PostgreSQL
+~$3,000
+الضخم
+٥٠,٠٠٠+
+Multi-Region + Read Replicas
+~$10,000+
+٥.٣ الأمان — طبقة بطبقة
+أولاً — تشفير البيانات
+// تشفير الإيميلات والجوالات — لا تُخزَّن نصاً أبداً
+const hashCustomer = (value) => {
+  return crypto.createHash('sha256')
+    .update(value.toLowerCase().trim())
+    .digest('hex')
+}
+
+// تشفير توكنات OAuth — AES-256
+const encryptToken = (token) => {
+  const iv = crypto.randomBytes(16)
+  const cipher = crypto.createCipheriv(
+    'aes-256-cbc',
+    Buffer.from(process.env.ENCRYPTION_KEY),
+    iv
+  )
+  return iv.toString('hex') + ':' + 
+    cipher.update(token, 'utf8', 'hex') + 
+    cipher.final('hex')
+}
+ثانياً — حماية الـ API
+// Rate Limiting
+const rateLimiter = rateLimit({
+  windowMs: 60 * 1000,     // دقيقة واحدة
+  max: 100,                 // 100 طلب كحد أقصى
+  keyGenerator: (req) => req.merchant.id
+})
+
+// التحقق من توقيع Webhook
+const verifyWebhook = (payload, signature) => {
+  const expected = crypto
+    .createHmac('sha256', process.env.SALLA_WEBHOOK_SECRET)
+    .update(payload)
+    .digest('hex')
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  )
+}
+
+// Idempotency — منع معالجة Webhook مكرر
+const processWebhook = async (webhookId, handler) => {
+  const key = `webhook:${webhookId}`
+  const processed = await redis.get(key)
+  if (processed) return  // تم معالجته مسبقاً
+  
+  await handler()
+  await redis.setex(key, 86400, '1')  // 24 ساعة
+}
+ثالثاً — النسخ الاحتياطي التلقائي
+// كل 6 ساعات — نسخة احتياطية مشفرة على S3
+const backupDatabase = async () => {
+  const timestamp = new Date().toISOString()
+  const filename = `backup-${timestamp}.sql.gz.enc`
+  
+  // 1. dump قاعدة البيانات
+  // 2. ضغط بـ gzip
+  // 3. تشفير بـ AES-256
+  // 4. رفع على S3
+  
+  await s3.upload({
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: `backups/${filename}`,
+    Body: encryptedBackup,
+    ServerSideEncryption: 'AES256'
+  })
+  
+  console.log(`✅ Backup completed: ${filename}`)
+}
+
+// Point-in-Time Recovery متاح لآخر 30 يوم
+cron.schedule('0 */6 * * *', backupDatabase)
+رابعاً — مراقبة وكشف الاختراق
+// تنبيه فوري على Telegram عند أي نشاط مشبوه
+const securityAlert = async (event, details) => {
+  await telegram.sendMessage({
+    chat_id: process.env.ADMIN_TELEGRAM_ID,
+    text: `🚨 تنبيه أمني\n${event}\n${JSON.stringify(details)}`
+  })
+}
+
+// أمثلة على المراقبة
+if (failedLogins > 5) securityAlert('محاولات دخول فاشلة', {ip, merchant})
+if (unusualQuery) securityAlert('استعلام غير معتاد', {query, merchant})
+if (highSpend) securityAlert('إنفاق مفاجئ كبير', {amount, merchant})
+٦. المعمارية التقنية الكاملة
+٦.١ Stack التقني
+الطبقة
+التقنية
+السبب
+الواجهة الأمامية
+Next.js 14 (App Router + RTL)
+سريع، SEO، دعم عربي ممتاز
+الخلفية
+NestJS (Node.js + TypeScript)
+منظم، قابل للتوسع، Type-safe
+قاعدة البيانات الرئيسية
+PostgreSQL + Prisma ORM
+موثوق، ACID، قابل للتوسع
+Cache وقوائم الانتظار
+Redis + BullMQ
+سريع، Webhook processing آمن
+قاعدة التحليلات
+ClickHouse
+ملايين سجلات بأداء عالٍ
+الذكاء الاصطناعي
+Claude API (claude-sonnet-4-5)
+القرارات، الكتابة، التحليل
+توليد صور الإعلان
+Fal AI
+تحويل صور المنتج لإعلانات احترافية
+الاستضافة
+Replit → Custom Domain
+تطوير على ريبلت، إنتاج على دومين خاص
+الإشعارات الفورية
+Firebase Cloud Messaging
+إشعارات للتاجر على الجوال فوراً
+التخزين والنسخ الاحتياطي
+AWS S3
+صور الإعلانات والنسخ المشفرة
+الدفع
+Moyasar
+مدى، Apple Pay، STC Pay
+٦.٢ النشر — من ريبلت إلى دومين خاص
+التطوير:
+ريبلت → بيئة تطوير كاملة → staging للاختبار
+
+الإنتاج:
+yourbrand.com (دومين خاص)
+↓
+Reverse Proxy (يخفي ريبلت تماماً)
+↓
+إزالة كل Response Headers المتعلقة بريبلت
+↓
+SSL مخصص + HTTPS إجباري
+↓
+التاجر لا يرى أي إشارة لريبلت أبداً
+إعداد الدومين الخاص:
+# Nginx Reverse Proxy
+server {
+  listen 443 ssl;
+  server_name yourbrand.com;
+  
+  # إخفاء هوية ريبلت
+  proxy_hide_header X-Powered-By;
+  proxy_hide_header Server;
+  
+  location / {
+    proxy_pass https://your-replit-app.repl.co;
+    proxy_set_header Host yourbrand.com;
+    proxy_set_header X-Real-IP $remote_addr;
+  }
+}
+٦.٣ تدفق البيانات الكامل
+التاجر يثبّت التطبيق
+         ↓
+OAuth Callback → NestJS يستقبل التوكن
+         ↓
+PostgreSQL يخزن التاجر (توكن مشفر AES-256)
+         ↓
+BullMQ يضيف Job: "onboard-merchant"
+         ↓
+Worker يشتغل:
+  ├── Salla/Zid API: يسحب 12 شهر مبيعات
+  ├── SHA-256: يشفر بيانات العملاء
+  ├── ClickHouse: يخزن الأحداث
+  ├── Claude: يحلل المتجر ويصنفه
+  └── Meta/Snap/TikTok CAPI: يرفع Custom Audience
+         ↓
+Webhooks تُسجَّل على سلة/زد
+         ↓
+كل حدث جديد (شراء/سلة متروكة):
+  ├── Redis Queue: يُخزَّن فوراً (لا يضيع)
+  ├── SHA-256: تشفير
+  ├── CAPI: إرسال للمنصات الإعلانية
+  └── ClickHouse: تخزين للتحليل
+         ↓
+Cron Jobs:
+  ├── كل 15 دقيقة: فحص رياضي للحملات
+  ├── يومياً: Claude يولد 10 نصائح إعلانية
+  ├── عند المواسم: تنبيه للتاجر
+  └── كل 6 ساعات: نسخة احتياطية مشفرة
+٧. نموذج الأعمال والتسعير
+٧.١ الباقات الأربع
+المميز
+تجربة مجانية
+باقة البداية
+باقة النمو
+السعر
+مجاناً ٣٠ يوم
+٩٩ ريال/شهر
+٢٩٩ ريال/شهر
+سقف الإنفاق الإعلاني
+٥٠٠ ريال
+٥,٠٠٠ ريال/شهر
+١٠,٠٠٠ ريال/شهر
+المنصات
+سناب + ميتا
+سناب + ميتا
+كل المنصات الأربع
+AI يدير الحملة
+✅
+✅
+✅
+نصائح يومية ١٠ جمل
+✅
+✅
+✅
+تذكير المواسم
+✅
+✅
+✅
+بيانات شبكة المتاجر
+محدودة
+كاملة
+كاملة + أولوية
+باقة الاحتراف — ٣٩٩ ريال/شهر:
+سقف الإنفاق: مفتوح بلا حد
+كل المنصات الأربع
+تحسين AI كل ١٥ دقيقة — أولوية قصوى
+تقارير يومية + أسبوعية + مقارنة بالشبكة
+دعم أولوية — رد خلال ساعة
+ملاحظة مهمة: الباقة تغطي رسوم الإدارة فقط. ميزانية الإعلانات يدفعها التاجر مباشرة لحسابه الإعلاني — لا تمر عبرنا. صفر مخاطرة مالية علينا.
+٧.٢ توقعات الإيرادات
+الشهر
+إجمالي التجار
+إيرادات الاشتراكات
+تكاليف AI + تشغيل
+صافي الربح
+شهر ١-٢
+٥٠ (مجاني)
+٠ ريال
+~١,٥٠٠ ريال
+بناء شبكة
+شهر ٣
+٢٠٠
+~٣٠,٠٠٠ ريال
+~٥,٠٠٠ ريال
+~٢٥,٠٠٠ ريال
+شهر ٦
+١,٠٠٠
+~٢٠٠,٠٠٠ ريال
+~١٥,٠٠٠ ريال
+~١٨٥,٠٠٠ ريال
+شهر ١٢
+٥,٠٠٠
+~١,٢٠٠,٠٠٠ ريال
+~٦٠,٠٠٠ ريال
+~١,١٤٠,٠٠٠ ريال
+٨. خطة التطوير
+٨.١ المراحل الأربع
+المرحلة الأولى — الأساس (٦ أسابيع)
+تطبيق سلة/زد + Webhook receiver
+ربط Claude API
+ربط APIs المنصات الأربع (Meta, Snap, TikTok, Google)
+داشبورد أساسي (Next.js 14)
+نظام الباقات والدفع عبر Moyasar
+النتيجة: أول ٥٠ تاجر مجاناً
+المرحلة الثانية — الشبكة (شهر ٣-٤)
+Network Audience Engine
+نصائح يومية ١٠ جمل باللهجة السعودية
+تحليل فيديو وصورة التاجر
+نظام المواسم والتنبيهات
+تقارير أداء كاملة
+النتيجة: بداية الإيرادات
+المرحلة الثالثة — التحسين (شهر ٥-٦)
+AI يصنع الإعلان كاملاً (Fal AI)
+تحسين ذكي كل ١٥ دقيقة
+إشعارات فورية للتاجر
+ClickHouse للتحليلات الضخمة
+النتيجة: ١,٠٠٠ تاجر
+المرحلة الرابعة — التوسع (شهر ٧+)
+توسع للكويت والإمارات
+تطبيق موبايل
+API للوكالات الإعلانية
+بيع بيانات الجمهور للوكالات
+النتيجة: ٥,٠٠٠+ تاجر
+٨.٢ تكلفة التطوير التقديرية
+البند
+التكلفة
+تطوير المرحلة الأولى (مطور Full-Stack واحد)
+١٥,٠٠٠ - ٢٥,٠٠٠ ريال
+استضافة ريبلت + دومين (السنة الأولى)
+~٢,٠٠٠ ريال
+Claude API (أول ٣ أشهر — ٥٠ تاجر)
+~٣,٠٠٠ ريال
+رسوم تسجيل التطبيق على سلة وزد
+~١,٠٠٠ ريال
+إجمالي الانطلاق
+٢١,٠٠٠ - ٣١,٠٠٠ ريال
+٩. ملاحظات للمطور
+٩.١ متغيرات البيئة المطلوبة (Replit Secrets)
+# سلة وزد
+SALLA_CLIENT_ID=
+SALLA_CLIENT_SECRET=
+SALLA_WEBHOOK_SECRET=
+ZID_CLIENT_ID=
+ZID_CLIENT_SECRET=
+
+# الذكاء الاصطناعي
+ANTHROPIC_API_KEY=
+FAL_API_KEY=
+
+# المنصات الإعلانية
+META_APP_ID=
+META_APP_SECRET=
+SNAP_CLIENT_ID=
+SNAP_CLIENT_SECRET=
+TIKTOK_APP_ID=
+TIKTOK_APP_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# قاعدة البيانات
+DATABASE_URL=
+REDIS_URL=
+CLICKHOUSE_URL=
+
+# الأمان
+ENCRYPTION_KEY=           # 32 حرف عشوائي — AES-256
+JWT_SECRET=               # 64 حرف عشوائي
+
+# التخزين
+AWS_S3_BUCKET=
+AWS_ACCESS_KEY=
+AWS_SECRET_KEY=
+
+# الدفع والإشعارات
+MOYASAR_API_KEY=
+FIREBASE_SERVER_KEY=
+ADMIN_TELEGRAM_ID=        # لتنبيهات الأمان
+٩.٢ أولويات لا تقبل التفاوض
+🔴 هذه النقاط يجب تنفيذها من اليوم الأول:
+الأمان: التشفير، Rate Limiting، النسخ الاحتياطي — ليست اختيارية أبداً
+الموافقات: شاشة الموافقة القانونية يجب أن تكون واضحة قبل أي سحب للبيانات
+عزل التجار: كل استعلام يتحقق من صلاحية التاجر — تاجر لا يرى بيانات آخر أبداً
+Idempotency: كل Webhook يُعالج مرة واحدة فقط حتى لو وصل مكرراً
+Graceful Degradation: إذا تعطلت Claude API يستمر النظام بقواعد رياضية
+إخفاء ريبلت: لا يظهر أي أثر لريبلت في الرابط أو Headers أو الكود المصدري
+٩.٣ اختبارات القبول قبل الإطلاق
+تثبيت تطبيق سلة وتطبيق زد واستقبال الـ Webhooks بنجاح
+ربط حساب سناب وميتا وتيك توك وجوجل وإطلاق حملة تجريبية
+استقبال ١,٠٠٠ حدث Webhook في الدقيقة دون تأخير
+قطع الاتصال بـ Claude API والتحقق أن النظام يستمر
+محاولة الوصول لبيانات تاجر من حساب تاجر آخر والتحقق من الرفض
+اختبار استعادة قاعدة البيانات من نسخة احتياطية في أقل من ٣٠ دقيقة
+التحقق أن الدومين لا يكشف أي headers تتعلق بريبلت
+الإصدار 1.0 | أبريل 2026 | سري وخاص — جميع الحقوق محفوظة
