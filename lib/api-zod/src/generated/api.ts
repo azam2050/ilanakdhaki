@@ -102,6 +102,13 @@ export const GetAdAccountConnectUrlResponse = zod.object({
 });
 
 /**
+ * @summary Disconnect a previously connected ad account
+ */
+export const DisconnectAdAccountParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+/**
  * @summary Dev-only — pretend that the given platform has been connected so the merchant can keep onboarding before real OAuth credentials exist.
  */
 export const MockConnectAdAccountParams = zod.object({

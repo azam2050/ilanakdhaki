@@ -131,6 +131,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConnectUrl"
 
+  /ad-accounts/{id}:
+    delete:
+      operationId: disconnectAdAccount
+      tags: [ad-accounts]
+      summary: Disconnect a previously connected ad account
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Disconnected
+
   /ad-accounts/{platform}/mock-connect:
     post:
       operationId: mockConnectAdAccount

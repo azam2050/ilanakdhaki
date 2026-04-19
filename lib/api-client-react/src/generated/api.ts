@@ -678,6 +678,90 @@ export function useGetAdAccountConnectUrl<
 }
 
 /**
+ * @summary Disconnect a previously connected ad account
+ */
+export const getDisconnectAdAccountUrl = (id: string) => {
+  return `/api/ad-accounts/${id}`;
+};
+
+export const disconnectAdAccount = async (
+  id: string,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getDisconnectAdAccountUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDisconnectAdAccountMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disconnectAdAccount>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof disconnectAdAccount>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["disconnectAdAccount"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof disconnectAdAccount>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return disconnectAdAccount(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DisconnectAdAccountMutationResult = NonNullable<
+  Awaited<ReturnType<typeof disconnectAdAccount>>
+>;
+
+export type DisconnectAdAccountMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Disconnect a previously connected ad account
+ */
+export const useDisconnectAdAccount = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disconnectAdAccount>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof disconnectAdAccount>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  return useMutation(getDisconnectAdAccountMutationOptions(options));
+};
+
+/**
  * @summary Dev-only — pretend that the given platform has been connected so the merchant can keep onboarding before real OAuth credentials exist.
  */
 export const getMockConnectAdAccountUrl = (
