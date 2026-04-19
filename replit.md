@@ -63,3 +63,9 @@ Salla configuration (in the Salla Partners dashboard):
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+
+## Phase 2 — Merchant Dashboard (April 19, 2026)
+- Backend: routes `auth/{me,logout}`, `onboarding/{start-demo,consent,audience-size}`, `ad-accounts/{list,connect-url,/:platform/mock-connect}`, `dashboard/{greeting,today,ai-decisions,platforms,cities,seasonal-alerts}` — all wired to drizzle schema, serving real aggregated data.
+- Demo session + mock-connect endpoints are gated to non-production via `NODE_ENV !== "production"` (or `ALLOW_DEMO_SESSION=true`). Real OAuth requires per-platform credentials.
+- Frontend: Arabic-only RTL react-vite app at `/` with deep-navy + warm-gold palette and Cairo font. Routes: onboarding (welcome/consent/connect-ads/success) and main shell (الرئيسية/الأداء/العملاء/الإعلانات/التقارير/الإعدادات). Auth guard redirects only on 401.
+- Demo merchant `salla_merchant_id=99` (متجر النور للأزياء) seeded with a segment (العبايات الكلاسيكية / 24,500 buyers across 142 stores), 4 ad accounts, 4 campaigns (one per platform), 8 Arabic AI-decision rows, ~90 network purchase events across Saudi cities/districts, and 3 seasonal alerts.

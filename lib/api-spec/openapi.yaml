@@ -3,20 +3,22 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Smart Ads Platform — merchant dashboard API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: onboarding
+  - name: ad-accounts
+  - name: dashboard
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +26,224 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Current merchant session
+      responses:
+        "200":
+          description: Authenticated merchant summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Not authenticated
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: End session
+      responses:
+        "204":
+          description: Logged out
+
+  /onboarding/start-demo:
+    post:
+      operationId: startDemoSession
+      tags: [onboarding]
+      summary: Start a demo session bound to the test merchant (used while Salla install is not configured for the current merchant browser).
+      responses:
+        "200":
+          description: Demo session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+
+  /onboarding/consent:
+    post:
+      operationId: saveConsent
+      tags: [onboarding]
+      summary: Persist merchant consent toggles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsentBody"
+      responses:
+        "200":
+          description: Consent saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+
+  /onboarding/audience-size:
+    get:
+      operationId: getAudienceSize
+      tags: [onboarding]
+      summary: Network audience size available to this merchant's segment
+      responses:
+        "200":
+          description: Audience size
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AudienceSize"
+
+  /ad-accounts:
+    get:
+      operationId: listAdAccounts
+      tags: [ad-accounts]
+      summary: List connected ad accounts
+      responses:
+        "200":
+          description: Accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdAccountSummary"
+
+  /ad-accounts/connect-url:
+    get:
+      operationId: getAdAccountConnectUrl
+      tags: [ad-accounts]
+      summary: Returns the platform's OAuth URL to start connection
+      parameters:
+        - in: query
+          name: platform
+          required: true
+          schema:
+            type: string
+            enum: [meta, snap, tiktok, google]
+      responses:
+        "200":
+          description: OAuth URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectUrl"
+
+  /ad-accounts/{platform}/mock-connect:
+    post:
+      operationId: mockConnectAdAccount
+      tags: [ad-accounts]
+      summary: Dev-only — pretend that the given platform has been connected so the merchant can keep onboarding before real OAuth credentials exist.
+      parameters:
+        - in: path
+          name: platform
+          required: true
+          schema:
+            type: string
+            enum: [meta, snap, tiktok, google]
+      responses:
+        "200":
+          description: Mock account created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdAccountSummary"
+
+  /dashboard/greeting:
+    get:
+      operationId: getGreeting
+      tags: [dashboard]
+      summary: Daily Arabic greeting line
+      responses:
+        "200":
+          description: Greeting
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Greeting"
+
+  /dashboard/today:
+    get:
+      operationId: getTodayMetrics
+      tags: [dashboard]
+      summary: Today's headline numbers
+      responses:
+        "200":
+          description: Today's metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodayMetrics"
+
+  /dashboard/ai-decisions:
+    get:
+      operationId: listAiDecisions
+      tags: [dashboard]
+      summary: Recent AI decisions in plain Arabic
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Decisions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AiDecisionItem"
+
+  /dashboard/platforms:
+    get:
+      operationId: getPlatformBreakdown
+      tags: [dashboard]
+      summary: Performance per ad platform
+      responses:
+        "200":
+          description: Platform breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlatformPerformance"
+
+  /dashboard/cities:
+    get:
+      operationId: getCityBreakdown
+      tags: [dashboard]
+      summary: Buyers grouped by city, with top districts
+      responses:
+        "200":
+          description: City breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CityBreakdown"
+
+  /dashboard/seasonal-alerts:
+    get:
+      operationId: listSeasonalAlerts
+      tags: [dashboard]
+      summary: Upcoming seasonal alerts relevant to this merchant
+      responses:
+        "200":
+          description: Alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SeasonalAlertItem"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +251,240 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    MeResponse:
+      type: object
+      properties:
+        merchantId:
+          type: string
+        storeName:
+          type: string
+        ownerName:
+          type: string
+          nullable: true
+        plan:
+          type: string
+        status:
+          type: string
+        consentAccepted:
+          type: boolean
+        connectedPlatforms:
+          type: array
+          items:
+            type: string
+      required:
+        - merchantId
+        - storeName
+        - plan
+        - status
+        - consentAccepted
+        - connectedPlatforms
+
+    ConsentBody:
+      type: object
+      properties:
+        readStoreData:
+          type: boolean
+        receiveWebhooks:
+          type: boolean
+        shareAudienceNetwork:
+          type: boolean
+        manageAdAccounts:
+          type: boolean
+      required:
+        - readStoreData
+        - receiveWebhooks
+        - shareAudienceNetwork
+        - manageAdAccounts
+
+    AudienceSize:
+      type: object
+      properties:
+        segmentName:
+          type: string
+        segmentDisplayName:
+          type: string
+        totalBuyers:
+          type: integer
+        totalMerchants:
+          type: integer
+        topCities:
+          type: array
+          items:
+            type: object
+            properties:
+              city:
+                type: string
+              share:
+                type: number
+            required: [city, share]
+      required:
+        - segmentDisplayName
+        - totalBuyers
+        - totalMerchants
+        - topCities
+
+    AdAccountSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        platform:
+          type: string
+        accountIdExternal:
+          type: string
+        status:
+          type: string
+        connectedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - platform
+        - accountIdExternal
+        - status
+        - connectedAt
+
+    ConnectUrl:
+      type: object
+      properties:
+        url:
+          type: string
+        available:
+          type: boolean
+        reasonArabic:
+          type: string
+          nullable: true
+      required: [url, available]
+
+    Greeting:
+      type: object
+      properties:
+        greetingArabic:
+          type: string
+        subtitleArabic:
+          type: string
+        merchantName:
+          type: string
+      required: [greetingArabic, subtitleArabic, merchantName]
+
+    TodayMetrics:
+      type: object
+      properties:
+        orders:
+          type: integer
+        spend:
+          type: number
+        revenue:
+          type: number
+        costPerOrder:
+          type: number
+          nullable: true
+        roas:
+          type: number
+          nullable: true
+        currency:
+          type: string
+        deltaVsYesterday:
+          type: object
+          properties:
+            ordersPct:
+              type: number
+            spendPct:
+              type: number
+            revenuePct:
+              type: number
+          required: [ordersPct, spendPct, revenuePct]
+      required:
+        - orders
+        - spend
+        - revenue
+        - currency
+        - deltaVsYesterday
+
+    AiDecisionItem:
+      type: object
+      properties:
+        id:
+          type: string
+        decisionType:
+          type: string
+        reasonArabic:
+          type: string
+        resultArabic:
+          type: string
+          nullable: true
+        executedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - decisionType
+        - reasonArabic
+        - executedAt
+
+    PlatformPerformance:
+      type: object
+      properties:
+        platform:
+          type: string
+        platformLabelArabic:
+          type: string
+        orders:
+          type: integer
+        spend:
+          type: number
+        costPerOrder:
+          type: number
+          nullable: true
+        roas:
+          type: number
+          nullable: true
+        share:
+          type: number
+      required:
+        - platform
+        - platformLabelArabic
+        - orders
+        - spend
+        - share
+
+    CityBreakdown:
+      type: object
+      properties:
+        city:
+          type: string
+        orders:
+          type: integer
+        revenue:
+          type: number
+        topDistricts:
+          type: array
+          items:
+            type: object
+            properties:
+              district:
+                type: string
+              orders:
+                type: integer
+            required: [district, orders]
+      required: [city, orders, revenue, topDistricts]
+
+    SeasonalAlertItem:
+      type: object
+      properties:
+        id:
+          type: string
+        nameArabic:
+          type: string
+        triggerDate:
+          type: string
+          format: date-time
+        daysUntil:
+          type: integer
+        targetCategories:
+          type: array
+          items:
+            type: string
+      required: [id, nameArabic, triggerDate, daysUntil, targetCategories]

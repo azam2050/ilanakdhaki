@@ -1,4 +1,6 @@
 import { Router, type IRouter } from "express";
+import { eq } from "drizzle-orm";
+import { db, adAccountsTable } from "@workspace/db";
 import sallaRouter from "./salla";
 import {
   clearSessionCookie,
@@ -11,16 +13,20 @@ const router: IRouter = Router();
 
 router.use(sallaRouter);
 
-router.get("/auth/me", requireSession, (req, res) => {
+router.get("/auth/me", requireSession, async (req, res) => {
   const m = req.merchant!;
+  const accounts = await db
+    .select({ platform: adAccountsTable.platform })
+    .from(adAccountsTable)
+    .where(eq(adAccountsTable.merchantId, m.id));
   res.json({
-    id: m.id,
+    merchantId: m.id,
     storeName: m.storeName,
-    storeDomain: m.storeDomain,
+    ownerName: m.ownerEmail ?? null,
     plan: m.plan,
-    category: m.category,
-    sallaConnected: m.sallaMerchantId != null,
-    zidConnected: m.zidMerchantId != null,
+    status: m.status,
+    consentAccepted: m.consents?.acceptedAt != null,
+    connectedPlatforms: accounts.map((a) => a.platform),
   });
 });
 
