@@ -27,6 +27,8 @@ export const networkEventsTable = pgTable(
     orderValue: numeric("order_value", { precision: 12, scale: 2 }),
     productCategory: varchar("product_category", { length: 64 }),
     subCategory: varchar("sub_category", { length: 64 }),
+    productName: varchar("product_name", { length: 255 }),
+    customerAgeBracket: varchar("customer_age_bracket", { length: 16 }),
     occurredAt: timestamp("occurred_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

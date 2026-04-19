@@ -23,6 +23,7 @@ import type {
   CityBreakdown,
   ConnectUrl,
   ConsentBody,
+  CustomersOverview,
   GetAdAccountConnectUrlParams,
   Greeting,
   HealthStatus,
@@ -1146,6 +1147,81 @@ export function useGetCityBreakdown<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetCityBreakdownQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Overview of this merchant's own customers (totals, cities, ages, top products)
+ */
+export const getGetCustomersOverviewUrl = () => {
+  return `/api/dashboard/customers`;
+};
+
+export const getCustomersOverview = async (
+  options?: RequestInit,
+): Promise<CustomersOverview> => {
+  return customFetch<CustomersOverview>(getGetCustomersOverviewUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetCustomersOverviewQueryKey = () => {
+  return [`/api/dashboard/customers`] as const;
+};
+
+export const getGetCustomersOverviewQueryOptions = <
+  TData = Awaited<ReturnType<typeof getCustomersOverview>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getCustomersOverview>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetCustomersOverviewQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getCustomersOverview>>
+  > = ({ signal }) => getCustomersOverview({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getCustomersOverview>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetCustomersOverviewQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getCustomersOverview>>
+>;
+export type GetCustomersOverviewQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Overview of this merchant's own customers (totals, cities, ages, top products)
+ */
+
+export function useGetCustomersOverview<
+  TData = Awaited<ReturnType<typeof getCustomersOverview>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getCustomersOverview>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetCustomersOverviewQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

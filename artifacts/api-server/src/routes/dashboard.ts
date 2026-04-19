@@ -211,6 +211,79 @@ router.get("/dashboard/cities", requireSession, async (req, res) => {
   );
 });
 
+router.get("/dashboard/customers", requireSession, async (req, res) => {
+  const m = req.merchant!;
+  const baseFilter = and(
+    eq(networkEventsTable.merchantId, m.id),
+    eq(networkEventsTable.eventType, "purchase"),
+  );
+
+  const [totalRow] = await db
+    .select({
+      total: sql<number>`COALESCE(COUNT(DISTINCT ${networkEventsTable.customerEmailHash}), 0)::int`,
+    })
+    .from(networkEventsTable)
+    .where(baseFilter);
+
+  const cityRows = await db
+    .select({
+      city: networkEventsTable.city,
+      orders: sql<number>`COALESCE(COUNT(*), 0)::int`,
+    })
+    .from(networkEventsTable)
+    .where(baseFilter)
+    .groupBy(networkEventsTable.city)
+    .orderBy(desc(sql`COUNT(*)`));
+
+  const ageRows = await db
+    .select({
+      bracket: networkEventsTable.customerAgeBracket,
+      orders: sql<number>`COALESCE(COUNT(*), 0)::int`,
+    })
+    .from(networkEventsTable)
+    .where(baseFilter)
+    .groupBy(networkEventsTable.customerAgeBracket);
+
+  const productRows = await db
+    .select({
+      name: networkEventsTable.productName,
+      orders: sql<number>`COALESCE(COUNT(*), 0)::int`,
+    })
+    .from(networkEventsTable)
+    .where(baseFilter)
+    .groupBy(networkEventsTable.productName)
+    .orderBy(desc(sql`COUNT(*)`))
+    .limit(8);
+
+  const cityTotal = cityRows.reduce((s, r) => s + (r.orders ?? 0), 0) || 1;
+  const ageTotal = ageRows.reduce((s, r) => s + (r.orders ?? 0), 0) || 1;
+
+  const ageOrder = ["18-24", "25-34", "35-44", "45-54", "55+"];
+
+  res.json({
+    totalCustomers: totalRow?.total ?? 0,
+    cityDistribution: cityRows
+      .filter((r) => r.city != null)
+      .slice(0, 6)
+      .map((r) => ({
+        city: r.city!,
+        share: Math.round(((r.orders ?? 0) / cityTotal) * 1000) / 10,
+      })),
+    ageDistribution: ageRows
+      .filter((r) => r.bracket != null)
+      .map((r) => ({
+        bracket: r.bracket!,
+        share: Math.round(((r.orders ?? 0) / ageTotal) * 1000) / 10,
+      }))
+      .sort(
+        (a, b) => ageOrder.indexOf(a.bracket) - ageOrder.indexOf(b.bracket),
+      ),
+    topProducts: productRows
+      .filter((r) => r.name != null)
+      .map((r) => ({ name: r.name!, orders: r.orders ?? 0 })),
+  });
+});
+
 router.get("/dashboard/seasonal-alerts", requireSession, async (_req, res) => {
   const rows = await db
     .select()

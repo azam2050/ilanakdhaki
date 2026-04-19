@@ -1,92 +1,82 @@
-import { useGetAudienceSize, useGetCityBreakdown } from "@workspace/api-client-react";
+import { useGetCustomersOverview } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatArabicNumber, formatPercentage } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, Globe, Building2, TrendingUp } from "lucide-react";
+import { formatArabicNumber, formatPercentage } from "@/lib/format";
+import { Users, MapPin, UserCircle2, Package } from "lucide-react";
+
+const AGE_LABEL: Record<string, string> = {
+  "18-24": "١٨–٢٤",
+  "25-34": "٢٥–٣٤",
+  "35-44": "٣٥–٤٤",
+  "45-54": "٤٥–٥٤",
+  "55+": "٥٥+",
+};
 
 export default function Customers() {
-  const { data: audience, isLoading: loadingAudience } = useGetAudienceSize();
-  const { data: cities = [], isLoading: loadingCities } = useGetCityBreakdown();
+  const { data, isLoading } = useGetCustomersOverview();
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">جمهورك والشبكة</h1>
-        <p className="text-muted-foreground">تعرف على المشترين المحتملين في شبكتنا الإعلانية</p>
+        <h1 className="text-3xl font-bold text-foreground">جمهورك</h1>
+        <p className="text-muted-foreground">من مشتريات متجرك</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-primary/5 border-primary/20">
-          <CardContent className="p-8">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-primary/20 text-primary rounded-xl">
-                <Users className="w-8 h-8" />
-              </div>
-              <div>
-                <h3 className="text-lg font-medium text-muted-foreground">المشترون المحتملون</h3>
-                <p className="text-sm text-muted-foreground">في فئة {audience?.segmentDisplayName || "متجرك"}</p>
-              </div>
+      <Card className="bg-primary/5 border-primary/20">
+        <CardContent className="p-8">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="p-3 bg-primary/15 text-primary rounded-xl">
+              <Users className="w-7 h-7" />
             </div>
-            {loadingAudience ? (
-              <Skeleton className="h-12 w-48" />
-            ) : (
-              <div className="text-5xl font-bold text-primary">
-                {formatArabicNumber(audience?.totalBuyers)}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-8">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-blue-500/10 text-blue-600 rounded-xl">
-                <Building2 className="w-8 h-8" />
-              </div>
-              <div>
-                <h3 className="text-lg font-medium text-muted-foreground">المتاجر المشتركة</h3>
-                <p className="text-sm text-muted-foreground">نتعلم من بيانات الشبكة معاً</p>
-              </div>
+            <div>
+              <h3 className="text-base font-medium text-muted-foreground">
+                إجمالي العملاء
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                من مشتريات متجرك
+              </p>
             </div>
-            {loadingAudience ? (
-              <Skeleton className="h-12 w-32" />
-            ) : (
-              <div className="text-5xl font-bold text-foreground">
-                {formatArabicNumber(audience?.totalMerchants)}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+          {isLoading ? (
+            <Skeleton className="h-12 w-48" />
+          ) : (
+            <div className="text-5xl font-bold text-primary">
+              {formatArabicNumber(data?.totalCustomers ?? 0)}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Globe className="w-5 h-5 text-primary" />
-              توزيع جمهور الشبكة
+              <MapPin className="w-5 h-5 text-primary" />
+              توزيع المدن
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
-              {loadingAudience ? (
-                Array(5).fill(0).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)
-              ) : (
-                audience?.topCities.map(city => (
-                  <div key={city.city} className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium">{city.city}</span>
-                      <span className="text-muted-foreground">{formatPercentage(city.share)}</span>
+            <div className="space-y-5">
+              {isLoading
+                ? Array(5)
+                    .fill(0)
+                    .map((_, i) => <Skeleton key={i} className="h-10 w-full" />)
+                : data?.cityDistribution.map((c) => (
+                    <div key={c.city} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium">{c.city}</span>
+                        <span className="text-muted-foreground">
+                          {formatPercentage(c.share)}
+                        </span>
+                      </div>
+                      <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full transition-all"
+                          style={{ width: `${c.share}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-primary rounded-full transition-all" 
-                        style={{ width: `${city.share}%` }}
-                      />
-                    </div>
-                  </div>
-                ))
-              )}
+                  ))}
             </div>
           </CardContent>
         </Card>
@@ -94,29 +84,71 @@ export default function Customers() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              مبيعاتك الجغرافية
+              <UserCircle2 className="w-5 h-5 text-primary" />
+              الفئة العمرية لعملائك
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {loadingCities ? (
-                Array(5).fill(0).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)
-              ) : (
-                cities.map(city => (
-                  <div key={city.city} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border/50">
+            <div className="space-y-5">
+              {isLoading
+                ? Array(3)
+                    .fill(0)
+                    .map((_, i) => <Skeleton key={i} className="h-10 w-full" />)
+                : data?.ageDistribution.map((a) => (
+                    <div key={a.bracket} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium">
+                          {AGE_LABEL[a.bracket] ?? a.bracket}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {formatPercentage(a.share)}
+                        </span>
+                      </div>
+                      <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full transition-all"
+                          style={{ width: `${a.share}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Package className="w-5 h-5 text-primary" />
+            أكثر ما يشترون
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {isLoading
+              ? Array(5)
+                  .fill(0)
+                  .map((_, i) => <Skeleton key={i} className="h-14 w-full" />)
+              : data?.topProducts.map((p, idx) => (
+                  <div
+                    key={p.name}
+                    className="flex items-center justify-between p-4 bg-muted/40 rounded-lg border border-border/40"
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-primary" />
-                      <span className="font-medium text-lg">{city.city}</span>
+                      <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+                        {formatArabicNumber(idx + 1)}
+                      </div>
+                      <span className="font-medium">{p.name}</span>
                     </div>
-                    <div className="text-xl font-bold">{formatArabicNumber(city.orders)} طلب</div>
+                    <div className="text-sm text-muted-foreground">
+                      {formatArabicNumber(p.orders)} طلب
+                    </div>
                   </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

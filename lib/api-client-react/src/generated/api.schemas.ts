@@ -105,6 +105,28 @@ export interface CityBreakdown {
   topDistricts: CityBreakdownTopDistrictsItem[];
 }
 
+export type CustomersOverviewCityDistributionItem = {
+  city: string;
+  share: number;
+};
+
+export type CustomersOverviewAgeDistributionItem = {
+  bracket: string;
+  share: number;
+};
+
+export type CustomersOverviewTopProductsItem = {
+  name: string;
+  orders: number;
+};
+
+export interface CustomersOverview {
+  totalCustomers: number;
+  cityDistribution: CustomersOverviewCityDistributionItem[];
+  ageDistribution: CustomersOverviewAgeDistributionItem[];
+  topProducts: CustomersOverviewTopProductsItem[];
+}
+
 export interface SeasonalAlertItem {
   id: string;
   nameArabic: string;

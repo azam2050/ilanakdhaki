@@ -229,6 +229,19 @@ paths:
                 items:
                   $ref: "#/components/schemas/CityBreakdown"
 
+  /dashboard/customers:
+    get:
+      operationId: getCustomersOverview
+      tags: [dashboard]
+      summary: Overview of this merchant's own customers (totals, cities, ages, top products)
+      responses:
+        "200":
+          description: Customers overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomersOverview"
+
   /dashboard/seasonal-alerts:
     get:
       operationId: listSeasonalAlerts
@@ -470,6 +483,47 @@ components:
                 type: integer
             required: [district, orders]
       required: [city, orders, revenue, topDistricts]
+
+    CustomersOverview:
+      type: object
+      properties:
+        totalCustomers:
+          type: integer
+        cityDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              city:
+                type: string
+              share:
+                type: number
+            required: [city, share]
+        ageDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              bracket:
+                type: string
+              share:
+                type: number
+            required: [bracket, share]
+        topProducts:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              orders:
+                type: integer
+            required: [name, orders]
+      required:
+        - totalCustomers
+        - cityDistribution
+        - ageDistribution
+        - topProducts
 
     SeasonalAlertItem:
       type: object

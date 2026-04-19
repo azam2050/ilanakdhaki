@@ -193,6 +193,31 @@ export const GetCityBreakdownResponseItem = zod.object({
 export const GetCityBreakdownResponse = zod.array(GetCityBreakdownResponseItem);
 
 /**
+ * @summary Overview of this merchant's own customers (totals, cities, ages, top products)
+ */
+export const GetCustomersOverviewResponse = zod.object({
+  totalCustomers: zod.number(),
+  cityDistribution: zod.array(
+    zod.object({
+      city: zod.string(),
+      share: zod.number(),
+    }),
+  ),
+  ageDistribution: zod.array(
+    zod.object({
+      bracket: zod.string(),
+      share: zod.number(),
+    }),
+  ),
+  topProducts: zod.array(
+    zod.object({
+      name: zod.string(),
+      orders: zod.number(),
+    }),
+  ),
+});
+
+/**
  * @summary Upcoming seasonal alerts relevant to this merchant
  */
 export const ListSeasonalAlertsResponseItem = zod.object({
