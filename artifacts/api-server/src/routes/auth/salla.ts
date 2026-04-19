@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import crypto from "node:crypto";
 import { eq, and, gt } from "drizzle-orm";
 import {
   db,
@@ -19,6 +20,20 @@ import { createSession, setSessionCookie } from "../../lib/session";
 
 const router: IRouter = Router();
 const STATE_TTL_MS = 1000 * 60 * 10; // 10 minutes
+const NONCE_COOKIE = "sa_oauth_nonce";
+
+function isSafeRelativePath(p: string): boolean {
+  // Must start with single "/", not "//" (protocol-relative) or "/\\"
+  if (!p.startsWith("/")) return false;
+  if (p.startsWith("//") || p.startsWith("/\\")) return false;
+  // Reject anything that decodes to an absolute URL
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(p)) return false;
+  return true;
+}
+
+function sha256(s: string): string {
+  return crypto.createHash("sha256").update(s).digest("hex");
+}
 
 router.get("/auth/salla/install", async (req, res): Promise<void> => {
   let cfg;
@@ -31,15 +46,28 @@ router.get("/auth/salla/install", async (req, res): Promise<void> => {
   }
 
   const state = randomToken(24);
-  const redirectTo =
-    typeof req.query.redirect_to === "string"
-      ? req.query.redirect_to
-      : "/";
+  const nonce = randomToken(24);
+  const requestedRedirect =
+    typeof req.query.redirect_to === "string" ? req.query.redirect_to : "/";
+  const redirectTo = isSafeRelativePath(requestedRedirect)
+    ? requestedRedirect
+    : "/";
+
   await db.insert(oauthStatesTable).values({
     state,
     provider: "salla",
     redirectTo,
+    nonceHash: sha256(nonce),
     expiresAt: new Date(Date.now() + STATE_TTL_MS),
+  });
+
+  const isProd = process.env.NODE_ENV === "production";
+  res.cookie(NONCE_COOKIE, nonce, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: "lax",
+    maxAge: STATE_TTL_MS,
+    path: "/api/auth/salla",
   });
 
   const url = new URL(SALLA_AUTHORIZE_URL);
@@ -60,6 +88,14 @@ router.get("/auth/salla/callback", async (req, res): Promise<void> => {
     res.status(400).json({ error: "Missing code or state" });
     return;
   }
+
+  const cookies = (req as { cookies?: Record<string, string> }).cookies;
+  const nonce = cookies?.[NONCE_COOKIE] ?? null;
+  if (!nonce) {
+    res.status(400).json({ error: "Missing OAuth nonce cookie" });
+    return;
+  }
+  res.clearCookie(NONCE_COOKIE, { path: "/api/auth/salla" });
 
   const [stateRow] = await db
     .select()
@@ -82,6 +118,17 @@ router.get("/auth/salla/callback", async (req, res): Promise<void> => {
   await db
     .delete(oauthStatesTable)
     .where(eq(oauthStatesTable.state, state));
+
+  const expectedHash = Buffer.from(stateRow.nonceHash, "hex");
+  const actualHash = Buffer.from(sha256(nonce), "hex");
+  if (
+    expectedHash.length !== actualHash.length ||
+    !crypto.timingSafeEqual(expectedHash, actualHash)
+  ) {
+    req.log.warn("OAuth nonce mismatch");
+    res.status(400).json({ error: "OAuth nonce mismatch" });
+    return;
+  }
 
   let token;
   let userInfo;
@@ -173,9 +220,10 @@ router.get("/auth/salla/callback", async (req, res): Promise<void> => {
   const sessionToken = await createSession(merchantId);
   setSessionCookie(res, sessionToken);
 
-  const redirectTo = stateRow.redirectTo ?? "/";
-  const safeRedirect = redirectTo.startsWith("/") ? redirectTo : "/";
-  res.redirect(safeRedirect);
+  const redirectTo = isSafeRelativePath(stateRow.redirectTo ?? "/")
+    ? (stateRow.redirectTo ?? "/")
+    : "/";
+  res.redirect(redirectTo);
 });
 
 export default router;

@@ -4,6 +4,7 @@ export const oauthStatesTable = pgTable("oauth_states", {
   state: varchar("state", { length: 128 }).primaryKey(),
   provider: varchar("provider", { length: 32 }).notNull(),
   redirectTo: text("redirect_to"),
+  nonceHash: varchar("nonce_hash", { length: 64 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

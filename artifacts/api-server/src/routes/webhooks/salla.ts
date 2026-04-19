@@ -95,7 +95,19 @@ router.post(
       ? String(payload.merchant)
       : null;
     const externalId = payload.data?.id ? String(payload.data.id) : null;
-    const dedupeKey = `salla:${eventName}:${sallaMerchantId ?? "_"}:${externalId ?? rawBody.length}`;
+    const headerEventId =
+      (req.headers["x-salla-event-id"] as string | undefined) ??
+      (req.headers["x-event-id"] as string | undefined) ??
+      null;
+    const bodyHash = (await import("node:crypto"))
+      .createHash("sha256")
+      .update(rawBody)
+      .digest("hex");
+    const dedupeKey = headerEventId
+      ? `salla:evt:${headerEventId}`
+      : externalId
+        ? `salla:${eventName}:${sallaMerchantId ?? "_"}:${externalId}`
+        : `salla:hash:${bodyHash}`;
 
     try {
       await db.insert(processedWebhooksTable).values({

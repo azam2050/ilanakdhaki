@@ -2,9 +2,12 @@ import type { Request, Response, NextFunction } from "express";
 import type { Merchant } from "@workspace/db";
 import { loadMerchantBySessionToken, readSessionCookie } from "../lib/session";
 
-declare module "express-serve-static-core" {
-  interface Request {
-    merchant?: Merchant;
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface Request {
+      merchant?: Merchant;
+    }
   }
 }
 
