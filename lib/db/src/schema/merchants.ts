@@ -18,12 +18,26 @@ export const merchantsTable = pgTable("merchants", {
   ownerEmail: varchar("owner_email", { length: 255 }),
   ownerPhone: varchar("owner_phone", { length: 64 }),
   category: varchar("category", { length: 64 }),
+  subCategory: varchar("sub_category", { length: 64 }),
+  city: varchar("city", { length: 128 }),
+  region: varchar("region", { length: 128 }),
+  // Salla platform OAuth tokens (separate from ad-platform tokens which live in ad_accounts).
   accessTokenEncrypted: text("access_token_encrypted"),
   refreshTokenEncrypted: text("refresh_token_encrypted"),
   tokenExpiresAt: timestamp("token_expires_at", { withTimezone: true }),
   tokenScope: text("token_scope"),
   plan: varchar("plan", { length: 32 }).notNull().default("trial"),
   planExpiresAt: timestamp("plan_expires_at", { withTimezone: true }),
+  status: varchar("status", { length: 32 }).notNull().default("active"),
+  reportFrequency: varchar("report_frequency", { length: 32 })
+    .notNull()
+    .default("daily"),
+  reportDeliveryHour: varchar("report_delivery_hour", { length: 5 })
+    .notNull()
+    .default("07:00"),
+  reportDeliveryMethod: varchar("report_delivery_method", { length: 32 })
+    .notNull()
+    .default("in_app"),
   consents: jsonb("consents")
     .$type<{
       readStoreData: boolean;

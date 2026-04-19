@@ -10,8 +10,8 @@ import {
 export const campaignsTable = pgTable("campaigns", {
   id: uuid("id").primaryKey().defaultRandom(),
   merchantId: uuid("merchant_id").notNull(),
+  adAccountId: uuid("ad_account_id"),
   platform: varchar("platform", { length: 32 }).notNull(),
-  adAccountId: varchar("ad_account_id", { length: 128 }),
   campaignIdExternal: varchar("campaign_id_external", { length: 128 }),
   name: varchar("name", { length: 255 }),
   status: varchar("status", { length: 32 }).notNull().default("draft"),
@@ -20,7 +20,9 @@ export const campaignsTable = pgTable("campaigns", {
     .notNull()
     .default("0"),
   ordersToday: integer("orders_today").notNull().default(0),
-  cpo: numeric("cpo", { precision: 12, scale: 2 }),
+  costPerOrder: numeric("cost_per_order", { precision: 12, scale: 2 }),
+  roas: numeric("roas", { precision: 8, scale: 2 }),
+  startedAt: timestamp("started_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

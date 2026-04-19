@@ -168,18 +168,25 @@ router.get("/auth/salla/callback", async (req, res): Promise<void> => {
     acceptedAt: new Date().toISOString(),
   };
 
-  const [existing] = await db
-    .select()
-    .from(merchantsTable)
-    .where(eq(merchantsTable.sallaMerchantId, sallaMerchantId))
-    .limit(1);
-
-  let merchantId: string;
-  if (existing) {
-    merchantId = existing.id;
-    await db
-      .update(merchantsTable)
-      .set({
+  // Atomic upsert keyed on the unique salla_merchant_id — avoids the classic
+  // select-then-insert race when the merchant double-clicks the install button.
+  const upserted = await db
+    .insert(merchantsTable)
+    .values({
+      sallaMerchantId,
+      storeName,
+      storeDomain,
+      ownerEmail,
+      ownerPhone,
+      accessTokenEncrypted,
+      refreshTokenEncrypted,
+      tokenExpiresAt,
+      tokenScope: token.scope ?? null,
+      consents,
+    })
+    .onConflictDoUpdate({
+      target: merchantsTable.sallaMerchantId,
+      set: {
         storeName,
         storeDomain,
         ownerEmail,
@@ -189,30 +196,16 @@ router.get("/auth/salla/callback", async (req, res): Promise<void> => {
         tokenExpiresAt,
         tokenScope: token.scope ?? null,
         consents,
-      })
-      .where(eq(merchantsTable.id, merchantId));
-  } else {
-    const [created] = await db
-      .insert(merchantsTable)
-      .values({
-        sallaMerchantId,
-        storeName,
-        storeDomain,
-        ownerEmail,
-        ownerPhone,
-        accessTokenEncrypted,
-        refreshTokenEncrypted,
-        tokenExpiresAt,
-        tokenScope: token.scope ?? null,
-        consents,
-      })
-      .returning();
-    merchantId = created!.id;
-  }
+      },
+    })
+    .returning({ id: merchantsTable.id, createdAt: merchantsTable.createdAt });
+  const merchantId = upserted[0]!.id;
+  const isNew =
+    Date.now() - upserted[0]!.createdAt.getTime() < 5_000;
 
   await db.insert(auditLogTable).values({
     merchantId,
-    action: existing ? "salla.reconnect" : "salla.connect",
+    action: isNew ? "salla.connect" : "salla.reconnect",
     details: { sallaMerchantId, storeName },
     ipAddress: req.ip ?? null,
   });

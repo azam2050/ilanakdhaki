@@ -1,9 +1,10 @@
 import { Router, type IRouter, raw } from "express";
+import crypto from "node:crypto";
 import { eq } from "drizzle-orm";
 import {
   db,
   merchantsTable,
-  eventsTable,
+  networkEventsTable,
   processedWebhooksTable,
   auditLogTable,
 } from "@workspace/db";
@@ -12,22 +13,31 @@ import { requireSallaConfig } from "../../lib/salla";
 
 const router: IRouter = Router();
 
+interface SallaCustomer {
+  email?: string;
+  mobile?: string;
+  city?: string;
+  district?: string;
+}
+
 interface SallaWebhookPayload {
   event?: string;
   merchant?: number | string;
   data?: {
     id?: number | string;
-    customer?: {
-      email?: string;
-      mobile?: string;
-      city?: string;
-    };
-    shipping?: { city?: string };
+    customer?: SallaCustomer;
+    shipping?: { city?: string; district?: string };
     total?: { amount?: number } | number;
     amounts?: { total?: { amount?: number } };
     items?: Array<{
-      product?: { categories?: Array<{ name?: string }> };
+      product?: {
+        categories?: Array<{ name?: string }>;
+        type?: string;
+      };
     }>;
+    email?: string;
+    mobile?: string;
+    city?: string;
   };
 }
 
@@ -47,13 +57,17 @@ function pickCategory(p: SallaWebhookPayload): string | null {
   return cats?.[0]?.name ?? null;
 }
 
-function eventTypeFromSallaEvent(event: string): string {
-  if (event.startsWith("order.")) return "purchase";
-  if (event.startsWith("abandoned")) return "abandoned_cart";
-  if (event.startsWith("cart.")) return "add_to_cart";
-  if (event.startsWith("product.viewed")) return "view";
-  return event;
+function pickSubCategory(p: SallaWebhookPayload): string | null {
+  const cats = p.data?.items?.[0]?.product?.categories;
+  return cats?.[1]?.name ?? null;
 }
+
+const SUPPORTED_EVENTS: Record<string, string> = {
+  "order.created": "purchase",
+  "cart.abandoned": "abandoned_cart",
+  "abandoned.cart": "abandoned_cart",
+  "customer.created": "customer_signup",
+};
 
 router.post(
   "/webhooks/salla",
@@ -99,7 +113,7 @@ router.post(
       (req.headers["x-salla-event-id"] as string | undefined) ??
       (req.headers["x-event-id"] as string | undefined) ??
       null;
-    const bodyHash = (await import("node:crypto"))
+    const bodyHash = crypto
       .createHash("sha256")
       .update(rawBody)
       .digest("hex");
@@ -137,18 +151,43 @@ router.post(
       return;
     }
 
-    const eventType = eventTypeFromSallaEvent(eventName);
-    const customer = payload.data?.customer;
-    const city = customer?.city ?? payload.data?.shipping?.city ?? null;
+    const eventType = SUPPORTED_EVENTS[eventName];
+    if (!eventType) {
+      // Acknowledge unsupported events so Salla does not retry, but do not store them.
+      await db.insert(auditLogTable).values({
+        merchantId: merchant.id,
+        action: `webhook.salla.${eventName}.ignored`,
+        details: { externalId },
+        ipAddress: req.ip ?? null,
+      });
+      res.status(200).json({ ok: true, ignored: "unsupported_event" });
+      return;
+    }
 
-    await db.insert(eventsTable).values({
+    const customer: SallaCustomer | undefined =
+      payload.data?.customer ??
+      (eventName === "customer.created"
+        ? {
+            email: payload.data?.email,
+            mobile: payload.data?.mobile,
+            city: payload.data?.city,
+          }
+        : undefined);
+    const city =
+      customer?.city ?? payload.data?.shipping?.city ?? null;
+    const district =
+      customer?.district ?? payload.data?.shipping?.district ?? null;
+
+    await db.insert(networkEventsTable).values({
       merchantId: merchant.id,
       eventType,
       customerEmailHash: hashCustomer(customer?.email),
       customerPhoneHash: hashCustomer(customer?.mobile),
       city,
-      orderValue: pickOrderValue(payload),
+      district,
+      orderValue: eventType === "purchase" ? pickOrderValue(payload) : null,
       productCategory: pickCategory(payload),
+      subCategory: pickSubCategory(payload),
     });
 
     await db.insert(auditLogTable).values({

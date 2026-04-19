@@ -1,4 +1,4 @@
-modules = ["nodejs-24"]
+modules = ["nodejs-24", "postgresql-16"]
 
 [deployment]
 router = "application"
@@ -31,3 +31,6 @@ externalPort = 80
 
 [userenv.shared]
 ENCRYPTION_KEY = "d05a986f8a476e51e52584c3b0f676488d3085c7d8642032d965fed8c3e40d9f"
+
+[nix]
+channel = "stable-25_05"

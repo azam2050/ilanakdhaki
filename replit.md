@@ -25,7 +25,9 @@ Dashboard UI is Arabic-only (RTL).
 
 Implemented:
 
-- Database schema (`lib/db/src/schema/`): `merchants`, `sessions`, `oauth_states`, `processed_webhooks`, `events`, `audiences`, `campaigns`, `ad_creatives`, `seasonal_notifications`, `audit_log`.
+- Database schema (`lib/db/src/schema/`): `merchants` (with sub_category, city, region, status, report_*), `ad_accounts` (per-platform tokens), `sessions`, `oauth_states`, `processed_webhooks`, `network_events` (purchase / abandoned_cart / customer_signup with district + sub_category), `segments`, `segment_audiences`, `campaigns` (cost_per_order, roas, started_at), `ai_decisions`, `ad_creatives`, `seasonal_alerts`, `audit_log`.
+- `network_events` partitioning by date is intentionally deferred — drizzle-kit doesn't manage `PARTITION BY`. Migrate via raw SQL when volume requires it; we currently rely on BTREE indexes on `(merchant_id, occurred_at)` and `(occurred_at)`.
+- Salla webhook handler maps `order.created` → `purchase`, `cart.abandoned` → `abandoned_cart`, `customer.created` → `customer_signup`. Other Salla events are acknowledged (200) but not stored.
 - Salla OAuth install + callback flow (`/api/auth/salla/install`, `/api/auth/salla/callback`):
   - State stored in DB with TTL + bound to a browser nonce cookie (defense against login CSRF).
   - One-time state consumption.
