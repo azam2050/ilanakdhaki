@@ -19,6 +19,12 @@ import Consent from "@/pages/onboarding/consent";
 import ConnectAds from "@/pages/onboarding/connect-ads";
 import Success from "@/pages/onboarding/success";
 
+import Landing from "@/pages/landing";
+import AdminLogin from "@/pages/admin/login";
+import AdminOverview from "@/pages/admin/overview";
+import AdminMerchants from "@/pages/admin/merchants";
+import AdminSegments from "@/pages/admin/segments";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -70,7 +76,29 @@ function AuthGuard() {
   return null;
 }
 
+const PUBLIC_PATHS = new Set(["/landing", "/admin", "/admin/login", "/admin/merchants", "/admin/segments"]);
+
+function isPublicPath(p: string): boolean {
+  return PUBLIC_PATHS.has(p) || p.startsWith("/admin/");
+}
+
 function Router() {
+  const [location] = useLocation();
+  const isPublic = location === "/landing" || location.startsWith("/admin");
+
+  if (isPublic) {
+    return (
+      <Switch>
+        <Route path="/landing" component={Landing} />
+        <Route path="/admin/login" component={AdminLogin} />
+        <Route path="/admin/merchants" component={AdminMerchants} />
+        <Route path="/admin/segments" component={AdminSegments} />
+        <Route path="/admin" component={AdminOverview} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
   return (
     <Layout>
       <AuthGuard />
@@ -81,17 +109,19 @@ function Router() {
         <Route path="/ads" component={Ads} />
         <Route path="/reports" component={Reports} />
         <Route path="/settings" component={Settings} />
-        
+
         <Route path="/onboarding/welcome" component={Welcome} />
         <Route path="/onboarding/consent" component={Consent} />
         <Route path="/onboarding/connect-ads" component={ConnectAds} />
         <Route path="/onboarding/success" component={Success} />
-        
+
         <Route component={NotFound} />
       </Switch>
     </Layout>
   );
 }
+
+void isPublicPath;
 
 function App() {
   return (

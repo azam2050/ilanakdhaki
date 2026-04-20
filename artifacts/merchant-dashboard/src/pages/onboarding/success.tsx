@@ -1,14 +1,32 @@
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useGetAudienceSize } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatArabicNumber } from "@/lib/format";
-import { Sparkles, ArrowLeft } from "lucide-react";
+import { Sparkles, ArrowLeft, TrendingUp } from "lucide-react";
+
+type Analysis = {
+  hasData: boolean;
+  summary: string | null;
+  recommendation: { product_name: string; suggested_budget_sar: number; reason_arabic: string } | null;
+  disclaimerArabic?: string;
+};
 
 export default function Success() {
   const [, setLocation] = useLocation();
   const { data: audience, isLoading } = useGetAudienceSize();
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [analysisLoading, setAnalysisLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/onboarding/campaign-analysis", { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setAnalysis(d))
+      .catch(() => setAnalysis(null))
+      .finally(() => setAnalysisLoading(false));
+  }, []);
 
   return (
     <div className="min-h-[100dvh] flex items-center justify-center bg-background py-12 px-4">
@@ -46,6 +64,40 @@ export default function Success() {
             ) : null}
           </CardContent>
         </Card>
+
+        {analysisLoading ? (
+          <Card className="bg-card border-border mt-4">
+            <CardContent className="p-6 space-y-3">
+              <Skeleton className="h-5 w-3/4 mx-auto" />
+              <Skeleton className="h-4 w-2/3 mx-auto" />
+            </CardContent>
+          </Card>
+        ) : analysis ? (
+          <Card className="bg-card border-primary/20 mt-4 text-right">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-primary">
+                <TrendingUp className="w-5 h-5" />
+                <span className="font-bold">تحليل حملاتك السابقة</span>
+              </div>
+              {analysis.summary && (
+                <p className="text-foreground leading-relaxed">{analysis.summary}</p>
+              )}
+              {analysis.recommendation && (
+                <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
+                  <div className="text-sm text-muted-foreground mb-1">توصية الإطلاق</div>
+                  <div className="font-bold text-lg">{analysis.recommendation.product_name}</div>
+                  <div className="text-sm text-foreground mt-1">
+                    ميزانية مقترحة: <span className="font-bold">{formatArabicNumber(analysis.recommendation.suggested_budget_sar)}</span> ر.س / يوم
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-2">{analysis.recommendation.reason_arabic}</div>
+                </div>
+              )}
+              {analysis.disclaimerArabic && (
+                <p className="text-xs text-muted-foreground">{analysis.disclaimerArabic}</p>
+              )}
+            </CardContent>
+          </Card>
+        ) : null}
 
         <div className="pt-8">
           <Button 

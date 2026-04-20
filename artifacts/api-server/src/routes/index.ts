@@ -6,6 +6,7 @@ import onboardingRouter from "./onboarding";
 import adAccountsRouter from "./adAccounts";
 import dashboardRouter from "./dashboard";
 import debugRouter from "./debug";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(onboardingRouter);
 router.use(adAccountsRouter);
 router.use(dashboardRouter);
 router.use(debugRouter);
+router.use(adminRouter);
 
 export default router;
