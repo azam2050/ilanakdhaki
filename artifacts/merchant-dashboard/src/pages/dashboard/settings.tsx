@@ -32,18 +32,14 @@ type Platform = "meta" | "snap" | "tiktok" | "google";
 const PLATFORMS: {
   id: Platform;
   label: string;
+  description: string;
   icon: React.ElementType;
   color: string;
 }[] = [
-  { id: "meta", label: "ميتا", icon: SiMeta, color: "text-blue-600" },
-  { id: "snap", label: "سناب شات", icon: SiSnapchat, color: "text-yellow-500" },
-  {
-    id: "tiktok",
-    label: "تيك توك",
-    icon: SiTiktok,
-    color: "text-foreground",
-  },
-  { id: "google", label: "جوجل", icon: SiGoogle, color: "text-red-500" },
+  { id: "meta", label: "ميتا", description: "اربط حسابك الإعلاني على ميتا وانستقرام", icon: SiMeta, color: "text-blue-600" },
+  { id: "snap", label: "سناب شات", description: "اربط حسابك الإعلاني على سناب شات", icon: SiSnapchat, color: "text-yellow-500" },
+  { id: "tiktok", label: "تيك توك", description: "اربط حسابك الإعلاني على تيك توك", icon: SiTiktok, color: "text-foreground" },
+  { id: "google", label: "جوجل", description: "اربط حسابك الإعلاني على جوجل", icon: SiGoogle, color: "text-red-500" },
 ];
 
 function openOAuthPopup(platform: Platform): Window | null {
@@ -181,7 +177,7 @@ export default function Settings() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <LinkIcon className="w-5 h-5 text-primary" />
-            المنصات الإعلانية
+            المنصات المتصلة
           </CardTitle>
           <CardDescription>
             اربط أو افصل منصاتك الإعلانية في أي وقت
@@ -221,7 +217,7 @@ export default function Settings() {
                           </p>
                         ) : (
                           <p className="text-sm text-muted-foreground mt-1">
-                            غير مرتبط
+                            {p.description}
                           </p>
                         )}
                       </div>
@@ -243,7 +239,7 @@ export default function Settings() {
                         size="sm"
                         onClick={() => handleConnect(p.id)}
                       >
-                        ربط {p.label}
+                        ربط الحساب
                       </Button>
                     )}
                   </div>

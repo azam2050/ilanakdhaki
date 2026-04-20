@@ -8,11 +8,11 @@ import { SiMeta, SiSnapchat, SiTiktok, SiGoogle } from "react-icons/si";
 
 type Platform = "meta" | "snap" | "tiktok" | "google";
 
-const PLATFORMS: { id: Platform; label: string; icon: React.ElementType; color: string }[] = [
-  { id: "meta", label: "ميتا (فيسبوك وانستغرام)", icon: SiMeta, color: "text-blue-600" },
-  { id: "snap", label: "سناب شات", icon: SiSnapchat, color: "text-yellow-400" },
-  { id: "tiktok", label: "تيك توك", icon: SiTiktok, color: "text-black dark:text-white" },
-  { id: "google", label: "جوجل", icon: SiGoogle, color: "text-red-500" },
+const PLATFORMS: { id: Platform; label: string; description: string; icon: React.ElementType; color: string }[] = [
+  { id: "meta", label: "ميتا", description: "اربط حسابك الإعلاني على ميتا وانستقرام", icon: SiMeta, color: "text-blue-600" },
+  { id: "snap", label: "سناب شات", description: "اربط حسابك الإعلاني على سناب شات", icon: SiSnapchat, color: "text-yellow-400" },
+  { id: "tiktok", label: "تيك توك", description: "اربط حسابك الإعلاني على تيك توك", icon: SiTiktok, color: "text-black dark:text-white" },
+  { id: "google", label: "جوجل", description: "اربط حسابك الإعلاني على جوجل", icon: SiGoogle, color: "text-red-500" },
 ];
 
 function PlatformCard({ platform, connected }: { platform: typeof PLATFORMS[0], connected: boolean }) {
@@ -54,26 +54,21 @@ function PlatformCard({ platform, connected }: { platform: typeof PLATFORMS[0], 
                 <p className="text-sm text-primary flex items-center gap-1 mt-1">
                   <CheckCircle2 size={14} /> متصل بنجاح
                 </p>
-              ) : connectUrlInfo?.available === false ? (
-                <p className="text-sm text-amber-600 flex items-center gap-1 mt-1">
-                  <AlertCircle size={14} /> {connectUrlInfo.reasonArabic || "غير متاح حالياً"}
-                </p>
               ) : (
                 <p className="text-sm text-muted-foreground mt-1">
-                  جاهز للربط
+                  {platform.description}
                 </p>
               )}
             </div>
           </div>
           
           {!connected && (
-            <Button 
-              variant={connectUrlInfo?.available === false ? "secondary" : "default"}
+            <Button
               onClick={handleConnect}
               disabled={isLoadingUrl || mockConnect.isPending}
             >
               {mockConnect.isPending ? <Loader2 className="w-4 h-4 animate-spin ms-2" /> : null}
-              {connectUrlInfo?.available === false ? "ربط تجريبي" : "ربط الحساب"}
+              ربط الحساب
             </Button>
           )}
         </div>
