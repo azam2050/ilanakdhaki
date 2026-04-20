@@ -33,8 +33,8 @@ export default function Ads() {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
           <Sparkles className="w-8 h-8" />
         </div>
-        <h1 className="text-3xl font-bold text-foreground">قرارات الذكاء الاصطناعي</h1>
-        <p className="text-lg text-muted-foreground">سجل كامل بكل ما نقوم به نيابة عنك لتحسين أداء حملاتك.</p>
+        <h1 className="text-3xl font-bold text-foreground">قرارات مسوّقك الذكي</h1>
+        <p className="text-lg text-muted-foreground">سجل كامل بكل ما أنجزه مسوّقك الذكي اليوم.</p>
       </div>
 
       {isLoading ? (

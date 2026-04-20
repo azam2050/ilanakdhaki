@@ -30,7 +30,7 @@ export default function Welcome() {
           </div>
           <h1 className="text-3xl font-bold text-foreground">مرحباً بك في الإعلانات الذكية</h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            نحن ندير إعلاناتك عبر منصات متعددة باستخدام الذكاء الاصطناعي لتنمية مبيعاتك، بينما تتفرغ أنت لإدارة متجرك.
+            يدير مسوّقك الذكي إعلاناتك عبر منصات متعددة لتنمية مبيعاتك، بينما تتفرغ أنت لإدارة متجرك.
           </p>
         </div>
 

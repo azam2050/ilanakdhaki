@@ -90,7 +90,7 @@ export default function ConnectAds() {
         <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold text-foreground">ربط المنصات الإعلانية</h1>
           <p className="text-lg text-muted-foreground">
-            اربط حساباتك الإعلانية وسيقوم الذكاء الاصطناعي بإدارتها وتوزيع الميزانية لتحقيق أفضل عائد.
+            اربط حساباتك الإعلانية وسيقوم مسوّقك الذكي بإدارتها وتوزيع الميزانية لتحقيق أفضل عائد.
           </p>
         </div>
 

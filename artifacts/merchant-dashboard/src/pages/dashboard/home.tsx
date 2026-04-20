@@ -80,7 +80,7 @@ export default function Home() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
-              قرارات الذكاء الاصطناعي
+              قرارات مسوّقك الذكي
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">

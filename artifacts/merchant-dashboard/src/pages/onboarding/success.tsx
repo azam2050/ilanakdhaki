@@ -42,7 +42,7 @@ export default function Success() {
 
         <h1 className="text-4xl font-bold text-foreground">اكتمل الإعداد بنجاح</h1>
         <p className="text-xl text-muted-foreground">
-          حسابك جاهز الآن. الذكاء الاصطناعي بدأ في تحليل متجرك وتجهيز حملاتك الأولى.
+          حسابك جاهز الآن. مسوّقك الذكي بدأ في تحليل متجرك وتجهيز حملاتك الأولى.
         </p>
 
         <Card className="bg-primary/5 border-primary/20 mt-8">
