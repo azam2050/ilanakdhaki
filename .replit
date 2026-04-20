@@ -1,4 +1,4 @@
-modules = ["nodejs-24", "postgresql-16"]
+modules = ["nodejs-24"]
 
 [deployment]
 router = "application"
@@ -18,23 +18,3 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
-
-[[ports]]
-localPort = 8080
-externalPort = 8080
-
-[[ports]]
-localPort = 8081
-externalPort = 80
-
-[[ports]]
-localPort = 19445
-externalPort = 3000
-
-[userenv]
-
-[userenv.shared]
-ENCRYPTION_KEY = "d05a986f8a476e51e52584c3b0f676488d3085c7d8642032d965fed8c3e40d9f"
-
-[nix]
-channel = "stable-25_05"
