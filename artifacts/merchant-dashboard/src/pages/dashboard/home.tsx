@@ -1,8 +1,8 @@
-import { useGetGreeting, useGetTodayMetrics, useListAiDecisions, useGetPlatformBreakdown, useGetCityBreakdown, useListSeasonalAlerts } from "@workspace/api-client-react";
+import { useGetGreeting, useGetTodayMetrics, useListAiDecisions, useGetPlatformBreakdown, useGetCityBreakdown, useListSeasonalAlerts, useGetMe } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatArabicNumber, formatCurrency, formatPercentage } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, TrendingDown, Bell, Activity, Sparkles, MapPin } from "lucide-react";
+import { TrendingUp, TrendingDown, Bell, Activity, Sparkles, MapPin, Zap } from "lucide-react";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 
@@ -13,6 +13,8 @@ export default function Home() {
   const { data: platforms = [], isLoading: loadingPlatforms } = useGetPlatformBreakdown();
   const { data: cities = [], isLoading: loadingCities } = useGetCityBreakdown();
   const { data: alerts = [], isLoading: loadingAlerts } = useListSeasonalAlerts();
+  const { data: me } = useGetMe();
+  const isPro = me?.plan === "pro";
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -27,6 +29,12 @@ export default function Home() {
           <Skeleton className="h-5 w-96" />
         ) : (
           <p className="text-muted-foreground">{greeting?.subtitleArabic}</p>
+        )}
+        {isPro && (
+          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 px-3 py-1 text-sm font-medium mt-2">
+            <Zap className="w-4 h-4" />
+            استهداف ذكي متقدم مفعّل
+          </div>
         )}
       </div>
 
@@ -80,31 +88,30 @@ export default function Home() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
-              قرارات مسوّقك الذكي
+              ما أنجزناه اليوم
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4">
             {loadingDecisions ? (
               Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)
             ) : decisions.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">لا توجد قرارات مسجلة اليوم</p>
+              <p className="text-muted-foreground text-center py-8">يوم هادئ — كل شي ماشي تمام 👌</p>
             ) : (
-              <div className="relative border-s-2 border-border ms-4 space-y-6">
+              <ul className="space-y-3">
                 {decisions.map(decision => (
-                  <div key={decision.id} className="relative ps-6">
-                    <span className="absolute -start-[9px] top-1 w-4 h-4 rounded-full bg-primary ring-4 ring-background" />
-                    <p className="text-sm text-muted-foreground mb-1">
-                      {format(new Date(decision.executedAt), 'h:mm a', { locale: ar })}
-                    </p>
-                    <p className="font-medium text-foreground">{decision.reasonArabic}</p>
-                    {decision.resultArabic && (
-                      <p className="text-sm text-primary mt-1 bg-primary/5 inline-block px-2 py-1 rounded">
-                        {decision.resultArabic}
-                      </p>
-                    )}
-                  </div>
+                  <li key={decision.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+                    <span className="text-lg shrink-0">✅</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground leading-snug">{decision.reasonArabic}</p>
+                      {decision.resultArabic && (
+                        <p className="text-sm text-primary mt-1">
+                          النتيجة: {decision.resultArabic}
+                        </p>
+                      )}
+                    </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </CardContent>
         </Card>

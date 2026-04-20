@@ -29,6 +29,18 @@ import { SiMeta, SiSnapchat, SiTiktok, SiGoogle } from "react-icons/si";
 
 type Platform = "meta" | "snap" | "tiktok" | "google";
 
+const PLAN_LABELS: Record<string, string> = {
+  trial: "تجربة مجانية ٣٠ يوم",
+  basic: "البداية — ٩٩ ر.س / شهر",
+  growth: "النمو — ٢٩٩ ر.س / شهر",
+  pro: "الاحتراف — ٣٩٩ ر.س / شهر",
+};
+
+function planLabel(plan?: string | null): string {
+  if (!plan) return "—";
+  return PLAN_LABELS[plan] ?? plan;
+}
+
 const PLATFORMS: {
   id: Platform;
   label: string;
@@ -167,7 +179,7 @@ export default function Settings() {
             {isLoadingMe ? (
               <Skeleton className="h-6 w-32" />
             ) : (
-              <p className="font-semibold text-lg">{me?.plan}</p>
+              <p className="font-semibold text-lg">{planLabel(me?.plan)}</p>
             )}
           </div>
         </CardContent>

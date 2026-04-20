@@ -59,7 +59,7 @@ export default function Reports() {
               loading={isLoading} 
             />
             <ReportItem 
-              label="العائد على الإنفاق (ROAS)" 
+              label="العائد على الإعلان" 
               value={metrics?.roas ? formatArabicNumber(metrics.roas) + 'x' : undefined} 
               loading={isLoading} 
               highlight

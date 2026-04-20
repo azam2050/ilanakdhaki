@@ -40,9 +40,11 @@ export default function Success() {
           </div>
         </div>
 
-        <h1 className="text-4xl font-bold text-foreground">اكتمل الإعداد بنجاح</h1>
+        <h1 className="text-4xl font-bold text-foreground">الحملة انطلقت ✨</h1>
         <p className="text-xl text-muted-foreground">
-          حسابك جاهز الآن. مسوّقك الذكي بدأ في تحليل متجرك وتجهيز حملاتك الأولى.
+          أنا أراقبها وأحسّنها — خلّك مرتاح، الموضوع عندي 💪
+          <br />
+          بإذن الله النتائج تسرّك 🤲
         </p>
 
         <Card className="bg-primary/5 border-primary/20 mt-8">

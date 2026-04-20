@@ -33,14 +33,47 @@ router.get("/dashboard/greeting", requireSession, (req, res) => {
   const m = req.merchant!;
   const hour = new Date().getUTCHours() + 3; // Riyadh
   const h = ((hour % 24) + 24) % 24;
-  let greeting: string;
-  if (h < 12) greeting = "صباح الخير";
-  else if (h < 17) greeting = "مساء النور";
-  else greeting = "مساء الخير";
+  const name = m.ownerName || m.storeName;
+
+  // Time-of-day greeting variants. Pick deterministically per day so the
+  // merchant doesn't see it bouncing on every refresh.
+  const dayKey = Math.floor((Date.now() + 3 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000));
+  const pick = <T,>(arr: T[]): T => arr[dayKey % arr.length]!;
+
+  let greetingArabic: string;
+  let subtitleArabic: string;
+
+  if (h < 12) {
+    greetingArabic = pick([
+      `صباح الخير ${name} ☀️`,
+      `يسعد صباحك ${name} 🌅`,
+      `صباح النور ${name} ☀️`,
+    ]);
+    subtitleArabic = pick([
+      "أنا شغّال من أمس على حملتك — هذا ملخّص اليوم 👇",
+      "هذا اللي صار من أمس لين الحين 👇",
+      "خلّيك مرتاح، أنا على الموضوع — هذا تحديث اليوم 👇",
+    ]);
+  } else if (h < 17) {
+    greetingArabic = pick([
+      `مساء النور ${name} 🌤️`,
+      `يا هلا ${name} 👋`,
+      `مساك الله بالخير ${name} ☕`,
+    ]);
+    subtitleArabic = "أراقب الحملة من الصبح — هذا اللي صار 👇";
+  } else {
+    greetingArabic = pick([
+      `مساء الخير ${name} 🌙`,
+      `مساك ورد ${name} ✨`,
+      `يا هلا ${name} 👋`,
+    ]);
+    subtitleArabic = "أنا أراقبها كل ربع ساعة — هذا ملخّص اليوم 👇";
+  }
+
   res.json({
-    greetingArabic: `${greeting} يا ${m.storeName}`,
-    subtitleArabic: "إليك ما أنجزه فريقك الذكي اليوم",
-    merchantName: m.storeName,
+    greetingArabic,
+    subtitleArabic,
+    merchantName: name,
   });
 });
 
