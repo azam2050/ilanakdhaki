@@ -1,4 +1,5 @@
-import { db, campaignsTable, aiDecisionsTable, segmentsTable } from "@workspace/db";
+import { db, campaignsTable, aiDecisionsTable, segmentsTable, merchantsTable } from "@workspace/db";
+import { sendTelegramAlert } from "./telegram";
 import { eq, and } from "drizzle-orm";
 import { anthropic } from "@workspace/integrations-anthropic-ai";
 import { logger } from "./logger";
@@ -175,6 +176,23 @@ export async function runOptimizationCycle(): Promise<{ checked: number; trigger
     if (!decision) continue;
     await executeDecision(c, decision);
     decided++;
+
+    if (decision.action === "pause_platform" || decision.action === "shift_audience") {
+      try {
+        const [m] = await db
+          .select({ storeName: merchantsTable.storeName })
+          .from(merchantsTable)
+          .where(eq(merchantsTable.id, c.merchantId));
+        const storeName = m?.storeName ?? "متجر";
+        const actionAr =
+          decision.action === "pause_platform" ? "إيقاف منصة" : "تحويل ميزانية";
+        await sendTelegramAlert(
+          `<b>${actionAr}</b>\nالمتجر: ${storeName}\nالحملة: ${c.name}\nالمنصة: ${c.platform}\nالسبب: ${decision.reason_arabic}`,
+        );
+      } catch {
+        /* swallow */
+      }
+    }
   }
   return { checked: campaigns.length, triggered, decided };
 }

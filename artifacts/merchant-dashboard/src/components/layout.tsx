@@ -41,6 +41,12 @@ export function Layout({ children }: { children: ReactNode }) {
               <NavLink href="/ads" active={location === "/ads"}>
                 الإعلانات
               </NavLink>
+              <NavLink href="/library" active={location === "/library"}>
+                مكتبة الصور
+              </NavLink>
+              <NavLink href="/alerts" active={location === "/alerts"}>
+                التنبيهات
+              </NavLink>
               <NavLink href="/reports" active={location === "/reports"}>
                 التقارير
               </NavLink>

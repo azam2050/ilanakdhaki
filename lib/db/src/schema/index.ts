@@ -8,6 +8,7 @@ export * from "./segments";
 export * from "./segmentAudiences";
 export * from "./aiDecisions";
 export * from "./adCreatives";
+export * from "./adLibraryItems";
 export * from "./seasonalAlerts";
 export * from "./auditLog";
 export * from "./processedWebhooks";

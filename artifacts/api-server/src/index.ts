@@ -2,6 +2,7 @@ import app from "./app";
 import { logger } from "./lib/logger";
 import { startOptimizer } from "./lib/optimizer";
 import { startDailyCopy } from "./lib/dailyCopy";
+import { startAlertsCron } from "./lib/alertsCron";
 
 const rawPort = process.env["PORT"];
 
@@ -26,4 +27,5 @@ app.listen(port, (err) => {
   logger.info({ port }, "Server listening");
   startOptimizer();
   startDailyCopy();
+  startAlertsCron();
 });

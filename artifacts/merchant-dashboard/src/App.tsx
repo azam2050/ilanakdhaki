@@ -13,6 +13,8 @@ import Customers from "@/pages/dashboard/customers";
 import Ads from "@/pages/dashboard/ads";
 import Reports from "@/pages/dashboard/reports";
 import Settings from "@/pages/dashboard/settings";
+import AlertsPage from "@/pages/dashboard/alerts";
+import LibraryPage from "@/pages/dashboard/library";
 
 import Welcome from "@/pages/onboarding/welcome";
 import Consent from "@/pages/onboarding/consent";
@@ -107,6 +109,8 @@ function Router() {
         <Route path="/performance" component={Performance} />
         <Route path="/customers" component={Customers} />
         <Route path="/ads" component={Ads} />
+        <Route path="/library" component={LibraryPage} />
+        <Route path="/alerts" component={AlertsPage} />
         <Route path="/reports" component={Reports} />
         <Route path="/settings" component={Settings} />
 

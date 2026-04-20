@@ -9,6 +9,17 @@ export default function Landing() {
 
   return (
     <div className="min-h-[100dvh] bg-background" dir="rtl">
+      {/* Sticky header */}
+      <header className="sticky top-0 z-50 bg-background/85 backdrop-blur border-b border-border/40">
+        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-lg font-bold">
+            <Sparkles className="w-5 h-5 text-primary" />
+            الإعلانات الذكية
+          </div>
+          <Button size="sm" onClick={start}>ابدأ تجربتك</Button>
+        </div>
+      </header>
+
       {/* Hero */}
       <section className="px-4 pt-16 pb-20 max-w-5xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-4 py-1.5 text-sm mb-8">
