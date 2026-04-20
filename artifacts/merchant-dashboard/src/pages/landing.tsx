@@ -27,13 +27,13 @@ export default function Landing() {
           إعلانات ذكية للمتاجر السعودية
         </div>
         <h1 className="text-4xl sm:text-6xl font-bold text-foreground leading-tight">
-          اترك إعلاناتك للذكاء الاصطناعي،
+          خلّ مسوّقك الذكي يشتغل
           <br />
-          وركّز على متجرك.
+          وأنت تركّز على متجرك.
         </h1>
         <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto">
-          نحن ندير حملاتك على ميتا وسناب وتيك توك وقوقل تلقائياً، نراقب الأداء كل ١٥ دقيقة،
-          ونعدّل الميزانية لما يحقّق طلبات أكثر بأقل تكلفة.
+          مسوّقك الذكي يدير حملاتك على ميتا وسناب وتيك توك وقوقل تلقائياً، يراقب الأداء كل ١٥ دقيقة،
+          ويعدّل الميزانية لما يحقّق طلبات أكثر بأقل تكلفة.
         </p>
         <div className="mt-10">
           <Button size="lg" className="h-14 px-10 text-lg rounded-full" onClick={start}>
