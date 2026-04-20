@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 import {
   db,
   merchantsTable,
@@ -58,26 +59,24 @@ router.post("/onboarding/start-demo", async (req, res): Promise<void> => {
   res.json(me);
 });
 
+const consentSchema = z
+  .object({
+    readStoreData: z.boolean(),
+    receiveWebhooks: z.boolean(),
+    shareAudienceNetwork: z.boolean(),
+    manageAdAccounts: z.boolean(),
+  })
+  .strict();
+
 router.post("/onboarding/consent", requireSession, async (req, res): Promise<void> => {
   const merchant = req.merchant!;
-  const body = req.body as Record<string, unknown>;
-  const required = [
-    "readStoreData",
-    "receiveWebhooks",
-    "shareAudienceNetwork",
-    "manageAdAccounts",
-  ] as const;
-  for (const k of required) {
-    if (typeof body?.[k] !== "boolean") {
-      res.status(400).json({ error: `Missing or invalid consent field: ${k}` });
-      return;
-    }
+  const parsed = consentSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid consent payload" });
+    return;
   }
   const consents = {
-    readStoreData: body.readStoreData as boolean,
-    receiveWebhooks: body.receiveWebhooks as boolean,
-    shareAudienceNetwork: body.shareAudienceNetwork as boolean,
-    manageAdAccounts: body.manageAdAccounts as boolean,
+    ...parsed.data,
     acceptedAt: new Date().toISOString(),
   };
   await db

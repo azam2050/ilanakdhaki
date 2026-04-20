@@ -111,6 +111,8 @@ router.get("/auth/salla/callback", async (req, res): Promise<void> => {
 
   if (!stateRow) {
     req.log.warn({ state }, "Invalid or expired OAuth state");
+    const { recordFailedLogin, clientIp } = await import("../../lib/security");
+    recordFailedLogin(clientIp(req), "salla:invalid_state");
     res.status(400).json({ error: "Invalid or expired state" });
     return;
   }
@@ -126,6 +128,8 @@ router.get("/auth/salla/callback", async (req, res): Promise<void> => {
     !crypto.timingSafeEqual(expectedHash, actualHash)
   ) {
     req.log.warn("OAuth nonce mismatch");
+    const { recordFailedLogin, clientIp } = await import("../../lib/security");
+    recordFailedLogin(clientIp(req), "salla:nonce_mismatch");
     res.status(400).json({ error: "OAuth nonce mismatch" });
     return;
   }

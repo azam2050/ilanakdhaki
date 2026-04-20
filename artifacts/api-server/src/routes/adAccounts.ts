@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
+import { z } from "zod";
 import { db, adAccountsTable } from "@workspace/db";
 import { requireSession } from "../middlewares/requireSession";
 import { encryptToken } from "../lib/crypto";
@@ -67,14 +68,35 @@ router.get(
   },
 );
 
+const uuidSchema = z.string().uuid();
+
 router.delete(
   "/ad-accounts/:id",
   requireSession,
   async (req, res): Promise<void> => {
     const merchant = req.merchant!;
-    const id = req.params.id;
-    if (!id) {
-      res.status(400).json({ error: "Missing id" });
+    const idResult = uuidSchema.safeParse(req.params.id);
+    if (!idResult.success) {
+      res.status(400).json({ error: "Invalid id" });
+      return;
+    }
+    const id = idResult.data;
+    // Detect cross-merchant access: the row exists but belongs to someone else.
+    const [row] = await db
+      .select({ merchantId: adAccountsTable.merchantId })
+      .from(adAccountsTable)
+      .where(eq(adAccountsTable.id, id))
+      .limit(1);
+    if (row && row.merchantId !== merchant.id) {
+      const { recordCrossMerchantAccess, clientIp } = await import(
+        "../lib/security"
+      );
+      recordCrossMerchantAccess({
+        ip: clientIp(req),
+        merchantId: merchant.id,
+        attemptedResource: `ad_account:${id}`,
+      });
+      res.status(404).json({ error: "Not found" });
       return;
     }
     await db
