@@ -7,6 +7,9 @@ import adAccountsRouter from "./adAccounts";
 import dashboardRouter from "./dashboard";
 import debugRouter from "./debug";
 import adminRouter from "./admin";
+import adminAuthRouter from "./adminAuth";
+import adminTeamRouter from "./adminTeam";
+import adminQuickRouter from "./adminQuick";
 import adLibraryRouter from "./adLibrary";
 
 const router: IRouter = Router();
@@ -18,6 +21,9 @@ router.use(onboardingRouter);
 router.use(adAccountsRouter);
 router.use(dashboardRouter);
 router.use(debugRouter);
+router.use(adminAuthRouter);
+router.use(adminTeamRouter);
+router.use(adminQuickRouter);
 router.use(adminRouter);
 router.use(adLibraryRouter);
 

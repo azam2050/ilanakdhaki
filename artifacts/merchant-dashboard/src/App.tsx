@@ -26,6 +26,7 @@ import AdminLogin from "@/pages/admin/login";
 import AdminOverview from "@/pages/admin/overview";
 import AdminMerchants from "@/pages/admin/merchants";
 import AdminSegments from "@/pages/admin/segments";
+import AdminSettings from "@/pages/admin/settings";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -95,6 +96,7 @@ function Router() {
         <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin/merchants" component={AdminMerchants} />
         <Route path="/admin/segments" component={AdminSegments} />
+        <Route path="/admin/settings" component={AdminSettings} />
         <Route path="/admin" component={AdminOverview} />
         <Route component={NotFound} />
       </Switch>

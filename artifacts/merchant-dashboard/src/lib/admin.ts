@@ -2,15 +2,21 @@ const TOKEN_KEY = "smart_ads_admin_token";
 
 export function getAdminToken(): string | null {
   try {
-    return localStorage.getItem(TOKEN_KEY);
+    return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
   } catch {
     return null;
   }
 }
 
-export function setAdminToken(token: string): void {
+export function setAdminToken(token: string, remember = true): void {
   try {
-    localStorage.setItem(TOKEN_KEY, token);
+    if (remember) {
+      localStorage.setItem(TOKEN_KEY, token);
+      sessionStorage.removeItem(TOKEN_KEY);
+    } else {
+      sessionStorage.setItem(TOKEN_KEY, token);
+      localStorage.removeItem(TOKEN_KEY);
+    }
   } catch {
     /* noop */
   }
@@ -19,6 +25,7 @@ export function setAdminToken(token: string): void {
 export function clearAdminToken(): void {
   try {
     localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
   } catch {
     /* noop */
   }

@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
-import { useLocation, Link } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useLocation } from "wouter";
 import { adminFetch } from "@/lib/admin";
-import { ChevronLeft } from "lucide-react";
 import { formatArabicNumber } from "@/lib/format";
+import { AdminShell, AdminCard } from "@/components/admin-shell";
 
 type Merchant = {
   id: string;
@@ -36,56 +33,52 @@ export default function AdminMerchants() {
   const filtered = list.filter((m) => m.storeName.toLowerCase().includes(q.toLowerCase()));
 
   return (
-    <div className="min-h-[100dvh] bg-background p-6" dir="rtl">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <Link href="/admin"><Button variant="ghost" size="icon"><ChevronLeft className="w-5 h-5" /></Button></Link>
-          <div>
-            <h1 className="text-2xl font-bold">التجّار</h1>
-            <p className="text-sm text-muted-foreground">{formatArabicNumber(list.length)} تاجر مسجّل</p>
-          </div>
-        </div>
+    <AdminShell title="التجّار" subtitle={`${formatArabicNumber(list.length)} تاجر مسجّل`}>
+      <input
+        placeholder="بحث باسم المتجر..."
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        className="mb-4 max-w-sm w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500"
+      />
 
-        <Input placeholder="بحث باسم المتجر..." value={q} onChange={(e) => setQ(e.target.value)} className="mb-4 max-w-sm" />
+      {error && error !== "unauthorized" && <div className="text-red-300 mb-4 text-sm">{error}</div>}
 
-        {error && error !== "unauthorized" && <div className="text-red-600 mb-4">{error}</div>}
-
-        <Card>
-          <CardContent className="p-0">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-muted-foreground">
-                <tr>
-                  <th className="text-right p-3">المتجر</th>
-                  <th className="text-right p-3">الفئة</th>
-                  <th className="text-right p-3">المدينة</th>
-                  <th className="text-right p-3">الباقة</th>
-                  <th className="text-right p-3">الحالة</th>
-                  <th className="text-right p-3">منذ</th>
+      <AdminCard className="overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-800/50 text-slate-300">
+            <tr>
+              <th className="text-right p-3 font-medium">المتجر</th>
+              <th className="text-right p-3 font-medium">الفئة</th>
+              <th className="text-right p-3 font-medium">المدينة</th>
+              <th className="text-right p-3 font-medium">الباقة</th>
+              <th className="text-right p-3 font-medium">الحالة</th>
+              <th className="text-right p-3 font-medium">منذ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="p-10 text-center text-slate-400">لا توجد نتائج.</td>
+              </tr>
+            ) : (
+              filtered.map((m) => (
+                <tr key={m.id} className="border-t border-slate-800 hover:bg-slate-800/30">
+                  <td className="p-3 font-medium">{m.storeName}</td>
+                  <td className="p-3 text-slate-400">{m.category ?? "—"}{m.subCategory ? ` / ${m.subCategory}` : ""}</td>
+                  <td className="p-3 text-slate-400">{m.city ?? "—"}</td>
+                  <td className="p-3 text-slate-400">{m.plan ?? "—"}</td>
+                  <td className="p-3">
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${m.status === "active" ? "bg-green-500/15 text-green-400" : "bg-amber-500/15 text-amber-400"}`}>
+                      {m.status === "active" ? "نشط" : m.status === "trialing" ? "تجريبي" : m.status}
+                    </span>
+                  </td>
+                  <td className="p-3 text-slate-500 text-xs">{new Date(m.createdAt).toLocaleDateString("ar-SA")}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {filtered.map((m) => (
-                  <tr key={m.id} className="border-t hover:bg-muted/30">
-                    <td className="p-3 font-medium">{m.storeName}</td>
-                    <td className="p-3 text-muted-foreground">{m.category ?? "—"}{m.subCategory ? ` / ${m.subCategory}` : ""}</td>
-                    <td className="p-3 text-muted-foreground">{m.city ?? "—"}</td>
-                    <td className="p-3 text-muted-foreground">{m.plan ?? "—"}</td>
-                    <td className="p-3">
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${m.status === "active" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
-                        {m.status === "active" ? "نشط" : m.status === "trialing" ? "تجريبي" : m.status}
-                      </span>
-                    </td>
-                    <td className="p-3 text-muted-foreground text-xs">{new Date(m.createdAt).toLocaleDateString("ar-SA")}</td>
-                  </tr>
-                ))}
-                {filtered.length === 0 && (
-                  <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">لا توجد نتائج</td></tr>
-                )}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+              ))
+            )}
+          </tbody>
+        </table>
+      </AdminCard>
+    </AdminShell>
   );
 }

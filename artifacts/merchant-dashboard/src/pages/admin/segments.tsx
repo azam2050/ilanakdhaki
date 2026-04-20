@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { useLocation, Link } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 import { adminFetch } from "@/lib/admin";
-import { ChevronLeft } from "lucide-react";
 import { formatArabicNumber } from "@/lib/format";
+import { AdminShell, AdminCard } from "@/components/admin-shell";
 
 type Segment = {
   id: string;
@@ -16,12 +14,15 @@ type Segment = {
 
 export default function AdminSegments() {
   const [, setLocation] = useLocation();
-  const [list, setList] = useState<Segment[]>([]);
+  const [list, setList] = useState<Segment[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    adminFetch<{ segments: Segment[] }>("/admin/segments")
-      .then((d) => setList(d.segments))
+    adminFetch<{ segments: Segment[] } | Segment[]>("/admin/segments")
+      .then((d) => {
+        const arr = Array.isArray(d) ? d : d?.segments;
+        setList(Array.isArray(arr) ? arr : []);
+      })
       .catch((e) => {
         setError((e as Error).message);
         if ((e as Error).message === "unauthorized") setLocation("/admin/login");
@@ -29,39 +30,38 @@ export default function AdminSegments() {
   }, [setLocation]);
 
   return (
-    <div className="min-h-[100dvh] bg-background p-6" dir="rtl">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <Link href="/admin"><Button variant="ghost" size="icon"><ChevronLeft className="w-5 h-5" /></Button></Link>
-          <div>
-            <h1 className="text-2xl font-bold">فئات الجمهور</h1>
-            <p className="text-sm text-muted-foreground">شبكة المشترين عبر التجار</p>
-          </div>
-        </div>
+    <AdminShell title="فئات الجمهور" subtitle="شبكة المشترين عبر التجار">
+      {error && error !== "unauthorized" && (
+        <div className="text-red-300 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 mb-4 text-sm">{error}</div>
+      )}
 
-        {error && error !== "unauthorized" && <div className="text-red-600 mb-4">{error}</div>}
-
-        <div className="grid sm:grid-cols-2 gap-4">
-          {list.map((s) => (
-            <Card key={s.id}>
-              <CardContent className="p-5">
-                <div className="text-lg font-bold mb-1">{s.displayName}</div>
-                <div className="text-xs text-muted-foreground mb-3">{s.name}</div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <div className="text-muted-foreground">المشترون</div>
-                    <div className="text-xl font-bold">{formatArabicNumber(s.totalBuyers)}</div>
-                  </div>
-                  <div>
-                    <div className="text-muted-foreground">التجّار</div>
-                    <div className="text-xl font-bold">{formatArabicNumber(s.totalMerchants)}</div>
-                  </div>
+      {list === null ? (
+        <div className="text-slate-400">جاري التحميل…</div>
+      ) : (list || []).length === 0 ? (
+        <AdminCard className="p-10 text-center">
+          <div className="text-slate-300 font-medium">لا توجد شرائح بعد</div>
+          <div className="text-sm text-slate-500 mt-1">سيتم إنشاء الشرائح تلقائياً مع نمو شبكة المشترين.</div>
+        </AdminCard>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {(list || []).map((s) => (
+            <AdminCard key={s.id} className="p-5">
+              <div className="text-lg font-bold mb-1">{s.displayName}</div>
+              <div className="text-xs text-slate-500 mb-4">{s.name}</div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="text-xs text-slate-400">المشترون</div>
+                  <div className="text-2xl font-bold text-amber-300">{formatArabicNumber(s.totalBuyers)}</div>
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <div className="text-xs text-slate-400">التجّار</div>
+                  <div className="text-2xl font-bold">{formatArabicNumber(s.totalMerchants)}</div>
+                </div>
+              </div>
+            </AdminCard>
           ))}
         </div>
-      </div>
-    </div>
+      )}
+    </AdminShell>
   );
 }

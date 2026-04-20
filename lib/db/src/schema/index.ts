@@ -12,3 +12,4 @@ export * from "./adLibraryItems";
 export * from "./seasonalAlerts";
 export * from "./auditLog";
 export * from "./processedWebhooks";
+export * from "./adminUsers";
