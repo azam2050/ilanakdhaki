@@ -5,6 +5,7 @@ import webhooksRouter from "./webhooks";
 import onboardingRouter from "./onboarding";
 import adAccountsRouter from "./adAccounts";
 import dashboardRouter from "./dashboard";
+import debugRouter from "./debug";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(webhooksRouter);
 router.use(onboardingRouter);
 router.use(adAccountsRouter);
 router.use(dashboardRouter);
+router.use(debugRouter);
 
 export default router;

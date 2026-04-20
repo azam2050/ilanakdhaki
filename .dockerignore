@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+**/dist
+**/.turbo
+.git
+.local
+attached_assets
+*.log
+.env
+.env.*
+!.env.example
+artifacts/mockup-sandbox
+artifacts/merchant-dashboard
