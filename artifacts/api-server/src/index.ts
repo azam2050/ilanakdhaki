@@ -3,6 +3,7 @@ import { logger } from "./lib/logger";
 import { startOptimizer } from "./lib/optimizer";
 import { startDailyCopy } from "./lib/dailyCopy";
 import { startAlertsCron } from "./lib/alertsCron";
+import { startContentScheduler } from "./lib/contentScheduler";
 
 const rawPort = process.env["PORT"];
 
@@ -28,4 +29,5 @@ app.listen(port, (err) => {
   startOptimizer();
   startDailyCopy();
   startAlertsCron();
+  startContentScheduler();
 });

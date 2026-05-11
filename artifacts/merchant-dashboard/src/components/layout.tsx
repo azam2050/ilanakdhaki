@@ -13,6 +13,7 @@ export function Layout({ children }: { children: ReactNode }) {
     location === "/performance" ||
     location === "/customers" ||
     location === "/ads" ||
+    location === "/content" ||
     location === "/reports" ||
     location === "/settings";
 
@@ -40,6 +41,9 @@ export function Layout({ children }: { children: ReactNode }) {
               </NavLink>
               <NavLink href="/ads" active={location === "/ads"}>
                 الإعلانات
+              </NavLink>
+              <NavLink href="/content" active={location === "/content"}>
+                توليد المحتوى
               </NavLink>
               <NavLink href="/library" active={location === "/library"}>
                 مكتبة الصور

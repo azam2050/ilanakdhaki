@@ -12,6 +12,7 @@ import adminTeamRouter from "./adminTeam";
 import adminQuickRouter from "./adminQuick";
 import adLibraryRouter from "./adLibrary";
 import chatRouter from "./chat";
+import contentRouter from "./content";
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ router.use(adminQuickRouter);
 router.use(adminRouter);
 router.use(adLibraryRouter);
 router.use(chatRouter);
+router.use(contentRouter);
 
 export default router;

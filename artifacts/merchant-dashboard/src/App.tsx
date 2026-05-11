@@ -15,6 +15,7 @@ import Reports from "@/pages/dashboard/reports";
 import Settings from "@/pages/dashboard/settings";
 import AlertsPage from "@/pages/dashboard/alerts";
 import LibraryPage from "@/pages/dashboard/library";
+import ContentPage from "@/pages/dashboard/content";
 
 import Welcome from "@/pages/onboarding/welcome";
 import Consent from "@/pages/onboarding/consent";
@@ -116,6 +117,7 @@ function Router() {
         <Route path="/performance" component={Performance} />
         <Route path="/customers" component={Customers} />
         <Route path="/ads" component={Ads} />
+        <Route path="/content" component={ContentPage} />
         <Route path="/library" component={LibraryPage} />
         <Route path="/alerts" component={AlertsPage} />
         <Route path="/reports" component={Reports} />

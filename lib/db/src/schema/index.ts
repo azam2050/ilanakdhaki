@@ -13,3 +13,4 @@ export * from "./seasonalAlerts";
 export * from "./auditLog";
 export * from "./processedWebhooks";
 export * from "./adminUsers";
+export * from "./contentTasks";
