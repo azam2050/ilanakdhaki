@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
 import { db, adAccountsTable } from "@workspace/db";
 import sallaRouter from "./salla";
+import registerRouter from "./register";
 import {
   clearSessionCookie,
   destroySession,
@@ -12,6 +13,7 @@ import { requireSession } from "../../middlewares/requireSession";
 const router: IRouter = Router();
 
 router.use(sallaRouter);
+router.use(registerRouter);
 
 router.get("/auth/me", requireSession, async (req, res) => {
   const m = req.merchant!;

@@ -13,6 +13,9 @@ export const merchantsTable = pgTable("merchants", {
   id: uuid("id").primaryKey().defaultRandom(),
   sallaMerchantId: varchar("salla_merchant_id", { length: 64 }).unique(),
   zidMerchantId: varchar("zid_merchant_id", { length: 64 }).unique(),
+  // Direct registration credentials (email/password — separate from Salla OAuth)
+  email: varchar("email", { length: 255 }).unique(),
+  passwordHash: varchar("password_hash", { length: 256 }),
   storeName: varchar("store_name", { length: 255 }).notNull(),
   storeDomain: varchar("store_domain", { length: 255 }),
   ownerEmail: varchar("owner_email", { length: 255 }),

@@ -27,6 +27,9 @@ import AdminOverview from "@/pages/admin/overview";
 import AdminMerchants from "@/pages/admin/merchants";
 import AdminSegments from "@/pages/admin/segments";
 import AdminSettings from "@/pages/admin/settings";
+import MerchantLogin from "@/pages/auth/login";
+import TermsPage from "@/pages/legal/terms";
+import PrivacyPage from "@/pages/legal/privacy";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,8 +51,8 @@ function AuthGuard() {
       const status = (error as unknown as { status?: number; response?: { status?: number } })?.status
         ?? (error as unknown as { response?: { status?: number } })?.response?.status;
       if (status === 401) {
-        if (!location.startsWith("/onboarding/welcome")) {
-          setLocation("/onboarding/welcome");
+        if (!location.startsWith("/onboarding/welcome") && !location.startsWith("/auth/")) {
+          setLocation("/auth/login");
         }
       }
       return;
@@ -79,20 +82,22 @@ function AuthGuard() {
   return null;
 }
 
-const PUBLIC_PATHS = new Set(["/landing", "/admin", "/admin/login", "/admin/merchants", "/admin/segments"]);
-
-function isPublicPath(p: string): boolean {
-  return PUBLIC_PATHS.has(p) || p.startsWith("/admin/");
-}
-
 function Router() {
   const [location] = useLocation();
-  const isPublic = location === "/landing" || location.startsWith("/admin");
+  const isPublic =
+    location === "/landing" ||
+    location.startsWith("/admin") ||
+    location.startsWith("/auth/") ||
+    location === "/terms" ||
+    location === "/privacy";
 
   if (isPublic) {
     return (
       <Switch>
         <Route path="/landing" component={Landing} />
+        <Route path="/auth/login" component={MerchantLogin} />
+        <Route path="/terms" component={TermsPage} />
+        <Route path="/privacy" component={PrivacyPage} />
         <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin/merchants" component={AdminMerchants} />
         <Route path="/admin/segments" component={AdminSegments} />
@@ -126,8 +131,6 @@ function Router() {
     </Layout>
   );
 }
-
-void isPublicPath;
 
 function App() {
   return (

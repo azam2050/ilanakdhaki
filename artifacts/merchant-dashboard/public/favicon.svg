@@ -1,3 +1,10 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+  <!-- Background -->
+  <rect width="180" height="180" rx="36" fill="#0F172A"/>
+  <!-- Glow effect -->
+  <circle cx="90" cy="90" r="60" fill="#F59E0B" fill-opacity="0.08"/>
+  <!-- Lightning bolt (AI spark) -->
+  <path d="M105 30L65 95H92L75 150L120 80H93L105 30Z" fill="#F59E0B"/>
+  <!-- Trending arrow overlay -->
+  <path d="M112 58L128 42M128 42H114M128 42V56" stroke="#FCD34D" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
